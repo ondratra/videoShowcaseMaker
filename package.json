@@ -1,0 +1,14 @@
+{
+  "name": "myBlog",
+  "version": "0.1.0",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "typescript": "^4.9.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
