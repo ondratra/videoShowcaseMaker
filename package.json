@@ -3,9 +3,16 @@
   "version": "0.1.0",
   "license": "GPL-3.0-or-later",
   "scripts": {
-    "build": "tsc"
+    "build": "rollup -c rollup.config.ts --configPlugin typescript",
+    "examplesServer": "http-server"
   },
-  "dependencies": {
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@types/glob": "^8.0.0",
+    "glob": "^8.0.3",
+    "http-server": "^14.1.1",
+    "rollup": "^3.10.0",
+    "tslib": "^2.4.1",
     "typescript": "^4.9.4"
   },
   "engines": {
