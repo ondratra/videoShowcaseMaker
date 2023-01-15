@@ -4,6 +4,7 @@
   "license": "GPL-3.0-or-later",
   "scripts": {
     "build": "rollup -c rollup.config.ts --configPlugin typescript",
+    "watch": "yarn build -w",
     "examplesServer": "http-server"
   },
   "devDependencies": {

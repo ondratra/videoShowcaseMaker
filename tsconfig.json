@@ -6,6 +6,7 @@
     "strict": true,
     "outDir": "dist",
     "rootDir": ".",
+    "moduleResolution": "node",
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,

@@ -3,6 +3,7 @@ import {IElementSelector} from '../tools/utils'
 import {BlockingSound} from '../tools/audio'
 import {IActionsSettings, ITargetPosition} from './interfaces'
 import {defaults} from '../flows/defaults'
+import {setupAll} from '../tools/cursor'
 
 // TODO: make this configurable
 const cdnUrlVolume = 'tmpCDN_TODO'

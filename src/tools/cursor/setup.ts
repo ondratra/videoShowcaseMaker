@@ -1,7 +1,7 @@
-import {createOverlay} from './utils'
+import {IPluginElements} from '../plugin'
+import {createOverlay} from '../utils'
 
-
-export interface ICursorElements {
+export interface ICursorElements extends IPluginElements {
     cursorContainer: HTMLElement
     cursorElement: HTMLElement
     clickEffectElement: HTMLElement
@@ -26,9 +26,9 @@ export function createCursorElements(): ICursorElements {
     cursorElement.style.position = 'absolute'
     cursorElement.style.left = '50%'
     cursorElement.style.top = '50%'
-    cursorElement.style.color = '#fff'
+    cursorElement.style.color = '#eee'
     cursorElement.style.stroke = '#000'
-    cursorElement.style.strokeWidth = '2px'
+    cursorElement.style.strokeWidth = '10px'
     // shadow and stroke are two valid alternative to highlight
     // cursorElement.style.textShadow = '#000 0px 0px 2px'
 
@@ -93,6 +93,7 @@ export function setupHoverEffect(cursorElements: ICursorElements): () => void {
 
     return clearEffect
 }
+
 
 function prepareVirtualStyles(cursorContainer: HTMLElement, hoverClass: string) {
     const filter = (item: CSSStyleRule) => !!item.selectorText && !!item.selectorText.match(/\:hover/)

@@ -30,3 +30,5 @@ export function findElement(selector: IElementSelector): HTMLElement {
 
     return result
 }
+
+export const mbDefault = <T>(value: T | undefined, defaultValue: T): T => typeof value == 'undefined' ? defaultValue : value
