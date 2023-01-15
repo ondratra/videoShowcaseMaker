@@ -30,19 +30,35 @@ export function videoPlan(actionSettings: IActionsSettings): IAsyncAction {
 
 */
 export function videoPlan(actionSettings: ITMPActionsSettings): IAsyncAction {
-    const defaults = {duration: 1000} // TODO: typeguard
+    const defaults = {
+        duration: 1000,
+        clickEffectDuration: 1000,
+    } // TODO: typeguard
 
+    // TODO: move this somewhere else
     // NOTE: conviences can be merged like this only if they all have unique names
     //const actions = Object.keys(actionSettings.appliances).reduce((acc, item) => ({...acc, ...actionSettings.appliances[item].convience}), {} as IPluginConvience)
     //const actions = Object.keys(actionSettings.appliances).reduce((acc, item) => ({...acc, ...actionSettings.appliances[item].convience(defaults)}), {} as IPluginConvience)
-
+    /*
     const actions = Object.keys(actionSettings.appliances).reduce((acc, item) => {
         console.log(actionSettings.appliances[item].convience)
         return {...acc, ...actionSettings.appliances[item].convience(defaults)}
     }, {} as IPluginConvience)
+    */
+    const actions = Object.keys(actionSettings.appliances)
+        .reduce<[IPluginConvience, Record<string, IPluginAppliance>]>((acc, applianceName) => {
+            const [conviences, pluginsLoaded] = acc
 
-    console.log(actionSettings)
-    console.log(actions)
+            const newConvience = actionSettings.appliances[applianceName].convience(pluginsLoaded, defaults)
+
+            return [
+                {...conviences, ...newConvience},
+                {...pluginsLoaded, [applianceName]: actionSettings.appliances[applianceName]},
+            ]
+        }, [{}, {}])[0]
+
+    console.log('actionSettings', actionSettings)
+    console.log('actions', actions)
 
     return asyncSequence([
         // TODO: improve type of `actions`
@@ -50,9 +66,8 @@ export function videoPlan(actionSettings: ITMPActionsSettings): IAsyncAction {
 
         // click example button
         actions.moveCursorToElement(selectors.exampleButton1),
-        //actions.delay(),
-        //actions.clickElement(selectors.exampleButton1),
-        //actions.delay(),
+        actions.clickElement(selectors.exampleButton1),
+        actions.delay(),
     ])
 }
 

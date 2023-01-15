@@ -12,26 +12,33 @@
 
     <div>
         <input
-            id="exampleButton1"
+            id="startButton"
             type="button"
             value="Click here to start"
             style="background-color: lawngreen;"
+
+
         />
     </div>
 
     <hr />
 
     <div>
-        <input type="button" class="exampleButton1" value="Example button1" />
+        <input
+            type="button"
+            id="exampleButton1"
+            value="Example button1"
+            onclick="this.style.backgroundColor = '#' + Math.random().toString(16).slice(-6)"
+        />
     </div>
 
     <!-- load app js -->
     <script type="module">
         import { executePlan } from '../../dist/index.js';
-        import { selectors, videoPlan } from '../../dist/examples/001_basics/showcaseScenario.js';
+        import { videoPlan } from '../../dist/examples/001_basics/showcaseScenario.js';
 
         // init start button
-        document.querySelector(selectors.exampleButton1).addEventListener('click', async () => {
+        document.querySelector('#startButton').addEventListener('click', async () => {
             await executePlan(videoPlan)
         })
     </script>

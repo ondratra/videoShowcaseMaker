@@ -1,15 +1,22 @@
 import {IPluginAppliance, IShowcaseMakerPlugin} from '../plugin'
 import * as setup from './setup'
 import {convience} from './convience'
+import * as rawActions from './actions'
 
-export * as actions from './actions'
+//export * as actions from './actions'
 export * as setup from './setup'
 
-// TODO somehow accept as parameter
-const defaults = {clickEffectDuration: 2111}
+// TODO remove this - somehow accept as parameter (probably already done in videoPlan)
+const defaults = {
+    clickEffectDuration: 2111
+}
 
 export async function setupAll() {
     const elements = setup.createCursorElements()
+    const actions = {
+        runClickEffect: setup.setupClickEffect(elements.clickEffectElement, defaults.clickEffectDuration),
+        ...rawActions
+    }
 
     const clearHoverInterval = setup.setupHoverEffect(elements)
 
@@ -21,12 +28,11 @@ export async function setupAll() {
         */
 
         name: 'cursor',
+        requiredPlugins: ['core'],
         elements,
-        actions: {
-            runClickEffect: setup.setupClickEffect(elements.clickEffectElement, defaults.clickEffectDuration),
-        },
+        actions,
         //convience,
-        convience: convience(elements),
+        convience: convience(elements, actions),
         destroy: async () => {
             clearHoverInterval()
         },

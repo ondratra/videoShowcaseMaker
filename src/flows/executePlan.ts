@@ -1,7 +1,8 @@
 import * as tools from '../tools'
 import {defaults} from './defaults'
 import {IActionsSettings} from '../actions/interfaces'
-import {asyncSequence, IAsyncAction} from '../tools/actions'
+import {asyncSequence} from '../tools/actions'
+import {IAsyncAction} from '../tools/interfaces'
 import {IShowcaseMakerPlugin, IPluginAppliance} from '../tools/plugin'
 
 // TODO: refactor everything here
@@ -24,8 +25,10 @@ export interface IVideoPlan {
     (actionSettings: ITMPActionsSettings): tools.actions.IAsyncAction
 }
 
+/*
 export function tmpPluginSetup() {
     const plugins = [
+        tools.core,
         tools.cursor,
 
 /*
@@ -36,11 +39,10 @@ export function tmpPluginSetup() {
                 destroy: async () => {},
             })
         }
-*/
+* /
     ].map(item => item.setupAll) satisfies IShowcaseMakerPlugin[]
 }
-
-
+*/
 
 export async function executePlan(videoPlan: IVideoPlan): Promise<void> {
     const documentBody = document.querySelector('body') as HTMLBodyElement
@@ -50,6 +52,7 @@ export async function executePlan(videoPlan: IVideoPlan): Promise<void> {
     // TODO: load properly - likely move to IVideoPlan
     
     const plugins: IShowcaseMakerPlugin[] = [
+        tools.core,
         tools.cursor,
     ].map(item => item.setupAll)
     
@@ -183,10 +186,6 @@ console.log(appliances)
 
             // clean container
             videoContainer.remove()
-
-
-            // clearHoverInterval()
-
             // clean everything plugins need
             asyncSequence(appliancesOrdered.map(item => item.destroy))
 
