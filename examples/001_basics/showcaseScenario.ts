@@ -1,74 +1,73 @@
-import {IActionsSettings} from '../../src/actions/interfaces'
-import {setupActions} from '../../src/actions/setupActions'
-import {IAsyncAction, asyncSequence} from '../../src/tools/actions'
-import {IPluginAppliance, IPluginConvience} from '../../src/tools/plugin'
+import {IAsyncAction} from '../../src/tools/interfaces'
+
+import {IPluginAppliance, IPluginConvience, IShowcaseMakerPlugin} from '../../src/tools/plugin'
 
 // TODO: move definition to different file
-import {ITMPActionsSettings} from '../../src/flows/executePlan'
+import {
+    AppliancesType,
+    DefaultsType,
+    executePlan as executePlanCore,
+    IVideoPlan,
+    ITMPActionsSettings,
+    tmpBlinder
+} from '../../src/flows/executePlan'
+import {mergeAppliancesCallables} from '../../src/flows/utils'
+import * as tools from '../../src/tools'
+import {RecordToValuesUnion, UnionToIntersection, SimpleFlatten} from '../../src/tools/typeUtils'
 
 export const selectors = {
     exampleButton1: '#exampleButton1'
 }
 
 
+export function getPlugins() {
+    const plugins = [
+        tools.core,
+        tools.cursor,
+    ] as const
+
+    type SetupAllArray<T extends typeof plugins> = {[K in keyof T]: T[K]['setupAll'] }
+
+    //const pluginSetups = plugins as unknown as SetupAllArray<typeof plugins> // TODO: try to get rid of `unknown` (tuple typings problem here)
+    const pluginSetups = plugins.map(item => item.setupAll) as unknown as SetupAllArray<typeof plugins> satisfies readonly (IShowcaseMakerPlugin<tmpBlinder>)[] // TODO: try to get rid of `unknown` (tuple typings problem here)
+console.log('werq', pluginSetups)
+
+    return pluginSetups
+}
+
+// TODO: use as minimal (extended) type for pluginList
+//type NoPlugins = SetupAllArray<typeof {}>
+
+
+type MyAppliances = AppliancesType<ReturnType<typeof getPlugins>>
+
 // TODO: rename videoPlan to showcasePlan
-/*
-export function videoPlan(actionSettings: IActionsSettings): IAsyncAction {
-    //const {actions/*, sequences, resources* /} = setupActions(actionSettings)
-
-    const {actions} = tmpSetupActions(actionSettings)
-
-    return asyncSequence([
-        // click example button
-        actions.moveCursorToElement(selectors.exampleButton1),
-        actions.delay(),
-        actions.clickElement(selectors.exampleButton1),
-        actions.delay(),
-    ])
-}
-
-
-*/
-export function videoPlan(actionSettings: ITMPActionsSettings): IAsyncAction {
-    const defaults = {
+export function videoPlan(actionSettings: ITMPActionsSettings<MyAppliances>): IAsyncAction {
+    const defaults: DefaultsType<MyAppliances> = {
         duration: 1000,
-        clickEffectDuration: 1000,
-    } // TODO: typeguard
+        delayAfterClickEffect: 300,
+        //clickEffectDuration: 1000,
+    }
 
-    // TODO: move this somewhere else
-    // NOTE: conviences can be merged like this only if they all have unique names
-    //const actions = Object.keys(actionSettings.appliances).reduce((acc, item) => ({...acc, ...actionSettings.appliances[item].convience}), {} as IPluginConvience)
-    //const actions = Object.keys(actionSettings.appliances).reduce((acc, item) => ({...acc, ...actionSettings.appliances[item].convience(defaults)}), {} as IPluginConvience)
-    /*
-    const actions = Object.keys(actionSettings.appliances).reduce((acc, item) => {
-        console.log(actionSettings.appliances[item].convience)
-        return {...acc, ...actionSettings.appliances[item].convience(defaults)}
-    }, {} as IPluginConvience)
-    */
-    const actions = Object.keys(actionSettings.appliances)
-        .reduce<[IPluginConvience, Record<string, IPluginAppliance>]>((acc, applianceName) => {
-            const [conviences, pluginsLoaded] = acc
+    const {actions, actionsConvience} = mergeAppliancesCallables(actionSettings.appliances, defaults)
 
-            const newConvience = actionSettings.appliances[applianceName].convience(pluginsLoaded, defaults)
+    // conviences overwrite actions of the same name
+    const tmpActions = {...actions, ...actionsConvience}
 
-            return [
-                {...conviences, ...newConvience},
-                {...pluginsLoaded, [applianceName]: actionSettings.appliances[applianceName]},
-            ]
-        }, [{}, {}])[0]
-
-    console.log('actionSettings', actionSettings)
-    console.log('actions', actions)
-
-    return asyncSequence([
-        // TODO: improve type of `actions`
-        //       not you can use `actions.nonExistingAction()` and compiler won't complain
-
+    return tmpActions.asyncSequence([
         // click example button
-        actions.moveCursorToElement(selectors.exampleButton1),
-        actions.clickElement(selectors.exampleButton1),
-        actions.delay(),
+        tmpActions.moveCursorToElement(selectors.exampleButton1),
+        tmpActions.clickElement(selectors.exampleButton1),
+        tmpActions.delay(),
+
+
+        // ultimate test of typeguards
+        //tmpActions.shouldThrowError(), // this should trigger compile-time error
     ])
 }
+
+
+
+
 
 

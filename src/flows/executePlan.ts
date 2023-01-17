@@ -1,196 +1,76 @@
-import * as tools from '../tools'
-import {defaults} from './defaults'
-import {IActionsSettings} from '../actions/interfaces'
-import {asyncSequence} from '../tools/actions'
+//import * as tools from '../tools'
+//import {defaults} from './defaults'
+import {createOverlay} from '../tools/utils'
+import {asyncSequence} from '../tools/core/actions'
 import {IAsyncAction} from '../tools/interfaces'
 import {IShowcaseMakerPlugin, IPluginAppliance} from '../tools/plugin'
+import {UnionToIntersection, RecordToValuesUnion} from '../tools/typeUtils'
 
 // TODO: refactor everything here
 
-/*
-export interface IVideoPlan {
-    (actionSettings: IActionsSettings): tools.actions.IAsyncAction
+
+
+export interface ITMPActionsSettings<Appliances> {
+    appliances: Appliances
+}
+export interface IVideoPlan<Appliances> {
+    (actionSettings: ITMPActionsSettings<Appliances>): IAsyncAction
 }
 
-export async function executePlan(videoPlan: IVideoPlan): Promise<void> {
-*/
+// TODO: find a way to properly set this `Defaults` type
+export type tmpBlinder = any
 
-// TODO: rename
-export interface ITMPActionsSettings {
-    appliances: Record<string, IPluginAppliance>
+
+
+// internal types providing proper access to plugins
+
+type MyApplianceType<PluginType extends () => Promise<IPluginAppliance<tmpBlinder>>> = Awaited<ReturnType<PluginType>>
+type OrderedAppliances<T extends readonly IShowcaseMakerPlugin<tmpBlinder>[]> = { [Key in keyof T]: MyApplianceType<T[Key]>} & {name: string}[]
+type ArrayToRecord<Array extends readonly any[], Key extends keyof Array[number] & (string | number)> = {
+    [K in Array[number] as K[Key]]: K
+}
+type MySetupPluginsResult<T extends readonly IShowcaseMakerPlugin<tmpBlinder>[]> = {
+    appliancesOrdered: OrderedAppliances<T>
+    appliances: ArrayToRecord<OrderedAppliances<T>, 'name'>
 }
 
-export interface IVideoPlan {
-    //(actionSettings: IActionsSettings): tools.actions.IAsyncAction
-    (actionSettings: ITMPActionsSettings): tools.actions.IAsyncAction
-}
+export type AppliancesType<Plugins extends readonly (IShowcaseMakerPlugin<tmpBlinder>)[]> = ArrayToRecord<OrderedAppliances<Plugins>, 'name'>
 
-/*
-export function tmpPluginSetup() {
-    const plugins = [
-        tools.core,
-        tools.cursor,
+export type DefaultsType<T extends AppliancesType<IShowcaseMakerPlugin<tmpBlinder>[]>> = UnionToIntersection<RecordToValuesUnion<{
+    [K in keyof T]: Parameters<T[K]['convience']>[1]
+}>>
 
-/*
-        {
-            setupAll: async () => ({
-                elements: {},
-                actions: {},
-                destroy: async () => {},
-            })
-        }
-* /
-    ].map(item => item.setupAll) satisfies IShowcaseMakerPlugin[]
-}
-*/
-
-export async function executePlan(videoPlan: IVideoPlan): Promise<void> {
-    const documentBody = document.querySelector('body') as HTMLBodyElement
-    const videoContainer = tools.utils.createOverlay('videoContainer')
-
-
-    // TODO: load properly - likely move to IVideoPlan
-    
-    const plugins: IShowcaseMakerPlugin[] = [
-        tools.core,
-        tools.cursor,
-    ].map(item => item.setupAll)
-    
-
-    /*
-    const plugins = [
-        tools.cursor,
-
-/*
-        {
-            setupAll: async () => ({
-                elements: {},
-                actions: {},
-                destroy: async () => {},
-            })
-        }
-* /
-    ].map(item => item.setupAll) satisfies IShowcaseMakerPlugin[]
-    */
-
-/*
-type aaaa = typeof plugins
-type bbbb = ReturnType<aaaa[number]>
-type cccc = Awaited<bbbb>
-*/
-/*
-    const appliancesOrdered = await Object.keys(plugins).reduce(async (accPromise, key) => {
-        const acc = await accPromise
-        const plugin = plugins[parseInt(key)]
-
-        acc.push(await plugin())
-
-        return acc
-    //}, Promise.resolve([] as IPluginAppliance[]))
-    //}, Promise.resolve([] as typeof plugins))
-    //}, Promise.resolve([] as Awaited<ReturnTypet<typeof plugins)[number]>>))
-    //}, Promise.resolve([] as Awaited<bbbb>))
-    //}, Promise.resolve([] as cccc[]))
-    }, Promise.resolve([] as Awaited<ReturnType<(typeof plugins)[number]>>[]))
-
-    const appliances = appliancesOrdered.reduce((acc, item, index) => {
-        acc[item.name] = item
-
-        return acc
-    }, {} as Record<string, typeof appliancesOrdered[number]>)
-*/
-
+export async function executePlan<
+    Appliance extends AppliancesType<Plugins>,
+    Plugins extends readonly (IShowcaseMakerPlugin<tmpBlinder>)[],
+>(videoPlan: IVideoPlan<Appliance>, plugins: Plugins): Promise<void> {
+    // setup plugins
     const {appliancesOrdered, appliances} = await setupPlugins(plugins)
-console.log(appliancesOrdered)
-console.log(appliances)
 
-    // TODO: remove this OLD CODE after everything has been moved from old repo
+    // append overlays to document
+    const documentBody = document.querySelector('body') as HTMLBodyElement
+    const videoContainer = createOverlay('videoContainer')
 
-    //// init cursor
-    //const cursorElements = tools.cursor.createCursorElements()
-    //const runClickEffect = tools.cursor.setupClickEffect(cursorElements.clickEffectElement, defaults.clickEffectDuration)
-    //const clearHoverInterval = tools.cursor.setupHoverEffect(cursorElements)
-
-    /*
-    // init subtitles
-    const subtitlesElements = createSubtitlesElements()
-
-    // init chatbox
-    const chatboxElements = createChatboxElements()
-
-    // init curtain
-    const curtainElements = createCurtainElements()
-
-    // init metamask illusion
-    const metamaskElements = createMetamaskElements()
-
-    // selectbox selection illusion
-    const selectboxSelectionElements = createSelectboxSelectionElements()
-
-    // clapboard
-    const clapboardElements = createClapboardElements()
-
-    // append elements to DOM - order matters
-    // behind curtain
-    videoContainer.appendChild(selectboxSelectionElements.overlayElement)
-    videoContainer.appendChild(chatboxElements.overlayElement)
-    videoContainer.appendChild(metamaskElements.overlayElement)
-*/
-    //videoContainer.appendChild(cursorElements.overlayElement)
-//TODO: ensure appliances.cursor.elements is of type ICursorElements
-    videoContainer.appendChild(appliances.cursor.elements.overlayElement)
-/*
-    // curtain
-    videoContainer.appendChild(curtainElements.overlayElement)
-    // in front of curtain
-    videoContainer.appendChild(subtitlesElements.overlayElement)
-    // in front of everything
-    videoContainer.appendChild(clapboardElements.overlayElement)
-*/
+    const overlays = appliancesOrdered
+        .map(item => item.elements.overlayElement)
+        .filter(item => item) as HTMLElement[]
+    overlays
+        .forEach(item => videoContainer.appendChild(item))
     documentBody.appendChild(videoContainer)
 
 
     // setTimeout needed to workaround some video start issues
     const resultPromise = new Promise<void>((resolve) => {
-        const videoElements = {
-            documentBody,
-
-            // TODO: rework
-            cursorElements: appliances.cursor.elements,
-            runClickEffect: appliances.cursor.actions.runClickEffect,
-            /*
-            subtitlesElements,
-            selectboxSelectionElements,
-            chatboxElements,
-            curtainElements,
-            metamaskElements,
-            clapboardElements,
-            */
-        }
-/*
-        const settings: IActionsSettings = {
-            videoElements,
-
-
-            /*
-            contractAddress,
-            contractFactory
-            * /
-        }
-*/
         setTimeout(async () => {
             // execute plan
-            //await videoPlan(settings)()
-            await videoPlan({appliances})()
+            //await videoPlan({appliances} as any)() // TODO: get rid of any
+            await videoPlan({appliances} as any)() // TODO: get rid of any
 
-
-            // clean container
-            videoContainer.remove()
             // clean everything plugins need
             asyncSequence(appliancesOrdered.map(item => item.destroy))
 
-
-
+            // clean container
+            videoContainer.remove()
 
 console.log('cleaer')
             // finish
@@ -201,33 +81,22 @@ console.log('cleaer')
     await resultPromise
 }
 
-// TODO: refactor + move to separate file or something like that
-function tmpSetupActions(appliances: IPluginAppliance[]) {
-    
-}
-
-async function setupPlugins(plugins: IShowcaseMakerPlugin[]) {
-    const appliancesOrdered = await Object.keys(plugins).reduce(async (accPromise, key) => {
+async function setupPlugins<Setups extends Plugins, Plugins extends readonly (IShowcaseMakerPlugin<tmpBlinder>)[]>(pluginsToSetup: Setups): Promise<MySetupPluginsResult<Setups>> {
+    const appliancesOrdered = await Object.keys(pluginsToSetup).reduce(async (accPromise, key) => {
         const acc = await accPromise
-        const plugin = plugins[parseInt(key)]
+        const plugin = pluginsToSetup[parseInt(key)]
 
         acc.push(await plugin())
 
         return acc
-    //}, Promise.resolve([] as IPluginAppliance[]))
-    //}, Promise.resolve([] as typeof plugins))
-    //}, Promise.resolve([] as Awaited<ReturnTypet<typeof plugins)[number]>>))
-    //}, Promise.resolve([] as Awaited<bbbb>))
-    //}, Promise.resolve([] as cccc[]))
-    }, Promise.resolve([] as Awaited<ReturnType<(typeof plugins)[number]>>[]))
+    }, Promise.resolve([]) as Promise<OrderedAppliances<Setups>>)
 
     const appliances = appliancesOrdered.reduce((acc, item, index) => {
-        acc[item.name] = item
+        //(acc as Record<string, typeof item>)[item.name] = item // this underwhelming typecast is needed to fulfill type guards
+        (acc as Record<string, typeof item>)[item.name] = item // this underwhelming typecast is needed to fulfill type guards
 
         return acc
-    }, {} as Record<string, typeof appliancesOrdered[number]>)
-console.log(appliancesOrdered)
-console.log(appliances)
+    }, {} as ArrayToRecord<OrderedAppliances<Setups>, 'name'>)
 
     return {appliancesOrdered, appliances}
 }

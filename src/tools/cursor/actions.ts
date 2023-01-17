@@ -16,8 +16,8 @@ export const moveCursorTo = (movingElement: HTMLElement, targetPosition: ITarget
     return resultPromise
 })
 
-export const moveCursorToElement = (rootElement: HTMLElement, movingElement: HTMLElement, targetSelector: IElementSelector, duration: number) => (): Promise<void> => {
-    const position = getTargetPosition(rootElement, targetSelector)
+export const moveCursorToElement = (movingElement: HTMLElement, targetSelector: IElementSelector, duration: number) => (): Promise<void> => {
+    const position = getTargetPosition(targetSelector)
     const centerPosition = {
         x: position.x + position.width / 2,
         y: position.y + position.height / 2,
@@ -26,7 +26,7 @@ export const moveCursorToElement = (rootElement: HTMLElement, movingElement: HTM
     return moveCursorTo(movingElement, centerPosition, duration)()
 }
 
-function getTargetPosition(rootElement: HTMLElement, targetSelector: IElementSelector): DOMRect {
+function getTargetPosition(targetSelector: IElementSelector): DOMRect {
     const targetElement = findElement(targetSelector) as HTMLElement
     const offset = targetElement.getBoundingClientRect()
 

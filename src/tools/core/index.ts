@@ -1,7 +1,8 @@
 // TODO: rename plugin (?)
 
+import {IPluginAppliance} from '../plugin'
 import * as actions from './actions'
-import {convience} from './convience'
+import {convience, IDefaultsa} from './convience'
 
 export async function setupAll() {
     return {
@@ -12,5 +13,6 @@ export async function setupAll() {
         actions, // TODO: fix typeguard for actions and add actions
         convience,
         destroy: async () => {},
-    }
+    //} satisfies IPluginAppliance<IDefaultsa>
+    } as const satisfies IPluginAppliance<IDefaultsa>
 }
