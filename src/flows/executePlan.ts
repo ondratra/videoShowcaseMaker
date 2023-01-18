@@ -1,26 +1,19 @@
-//import * as tools from '../tools'
-//import {defaults} from './defaults'
 import {createOverlay} from '../tools/utils'
 import {asyncSequence} from '../tools/core/actions'
-import {IAsyncAction} from '../tools/interfaces'
+import {IAsyncAction} from '../tools/plugin'
 import {IShowcaseMakerPlugin, IPluginAppliance} from '../tools/plugin'
 import {UnionToIntersection, RecordToValuesUnion} from '../tools/typeUtils'
 
-// TODO: refactor everything here
-
-
-
-export interface ITMPActionsSettings<Appliances> {
+export interface IVideoPlanParameters<Appliances> {
     appliances: Appliances
 }
+
 export interface IVideoPlan<Appliances> {
-    (actionSettings: ITMPActionsSettings<Appliances>): IAsyncAction
+    (actionSettings: IVideoPlanParameters<Appliances>): IAsyncAction
 }
 
 // TODO: find a way to properly set this `Defaults` type
 export type tmpBlinder = any
-
-
 
 // internal types providing proper access to plugins
 
@@ -63,7 +56,6 @@ export async function executePlan<
     const resultPromise = new Promise<void>((resolve) => {
         setTimeout(async () => {
             // execute plan
-            //await videoPlan({appliances} as any)() // TODO: get rid of any
             await videoPlan({appliances} as any)() // TODO: get rid of any
 
             // clean everything plugins need
@@ -82,11 +74,33 @@ console.log('cleaer')
 }
 
 async function setupPlugins<Setups extends Plugins, Plugins extends readonly (IShowcaseMakerPlugin<tmpBlinder>)[]>(pluginsToSetup: Setups): Promise<MySetupPluginsResult<Setups>> {
+    // TODO: explore posibilities to add type check for `requiredPlugins`
+    //       that ensures all required plugins are present in appliances
+    //       BEFORE plugin that requires it
+    //
+    //       such typeguard will need more research and will likely take
+    //       quite time to implement
+    function detectMissingRequiredPlugins(loadedPlugins: OrderedAppliances<Setups>, requiredPlugins: readonly string[]): string[] {
+        return requiredPlugins.reduce((acc, requiredPluginName) => acc.concat(
+            loadedPlugins.find(item => item.name == requiredPluginName)
+                ? []
+                : [requiredPluginName]
+        ), [] as string[])
+    }
+
     const appliancesOrdered = await Object.keys(pluginsToSetup).reduce(async (accPromise, key) => {
         const acc = await accPromise
         const plugin = pluginsToSetup[parseInt(key)]
+        const appliance = await plugin()
 
-        acc.push(await plugin())
+        const missingRequiredPlugins = detectMissingRequiredPlugins(acc, appliance.requiredPlugins)
+        if (missingRequiredPlugins.length) {
+            const tmpLoadedMsg = acc.map(item => item.name).join(', ')
+            const tmpMissingMsg = missingRequiredPlugins.join(', ')
+            throw new Error(`Not all required plugins are loaded! Loaded: [${tmpLoadedMsg}]. Missing: [${tmpMissingMsg}]. Required by: "${appliance.name}"`)
+        }
+
+        acc.push(appliance)
 
         return acc
     }, Promise.resolve([]) as Promise<OrderedAppliances<Setups>>)

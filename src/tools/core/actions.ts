@@ -1,4 +1,4 @@
-import {IAsyncAction} from '../interfaces'
+import {IAsyncAction} from '../plugin'
 import {findElement, IElementSelector} from '../utils'
 
 export const delay = (timeout: number) => () => new Promise<void>((resolve) => setTimeout(resolve, timeout))

@@ -20,8 +20,8 @@ export function createCursorElements(): ICursorElements {
     cursorContainer.style.transform = 'translate(0px, 0px)'
 
     const cursorElement = document.createElement('div')
-    cursorElement.classList.add('fas')
-    cursorElement.classList.add('fa-mouse-pointer')
+    //cursorElement.classList.add('fas')
+    //cursorElement.classList.add('fa-mouse-pointer')
     cursorElement.style.fontSize = '18px'
     cursorElement.style.position = 'absolute'
     cursorElement.style.left = '50%'
@@ -31,6 +31,14 @@ export function createCursorElements(): ICursorElements {
     cursorElement.style.strokeWidth = '10px'
     // shadow and stroke are two valid alternative to highlight
     // cursorElement.style.textShadow = '#000 0px 0px 2px'
+
+    // cursor icon has to be in separate div, otherwise it can break hover effect
+    // due to some Font Awesome div replacement (or something like that)
+    const tmp = document.createElement('div')
+    tmp.classList.add('fas')
+    tmp.classList.add('fa-mouse-pointer')
+
+    cursorElement.appendChild(tmp)
 
     const clickEffectElement = document.createElement('div')
     clickEffectElement.style.width = '100px'
