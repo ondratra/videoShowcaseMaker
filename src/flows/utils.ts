@@ -1,6 +1,7 @@
 import {IPluginAppliance, IShowcaseMakerPlugin} from '../../src/tools/plugin'
-import {tmpBlinder, DefaultsType} from './executePlan'
-import {SimpleFlatten} from '../../src/tools/typeUtils'
+import {tmpBlinder} from './executePlan'
+import {ArrayToRecord, SimpleFlatten} from '../../src/tools/typeUtils'
+import {FilterEmptyProperties, UnionToIntersection, RecordValuesToUnion} from '../tools/typeUtils'
 
 type RecordAppliances = Record<string, IPluginAppliance<tmpBlinder>>
 
@@ -58,3 +59,36 @@ export function mergeAppliancesCallables<Appliances extends RecordAppliances>(ap
         actionsConvience: getAppliancesActionsConvience(appliances, defaults),
     }
 }
+
+
+
+// internal types providing proper access to plugins
+
+type MyApplianceType<PluginType extends () => Promise<IPluginAppliance<tmpBlinder>>> = Awaited<ReturnType<PluginType>>
+
+export type OrderedAppliances<T extends readonly IShowcaseMakerPlugin<tmpBlinder>[]> = { [Key in keyof T]: MyApplianceType<T[Key]>} & {name: string}[]
+
+export type MySetupPluginsResult<T extends readonly IShowcaseMakerPlugin<tmpBlinder>[]> = {
+    appliancesOrdered: OrderedAppliances<T>
+    appliances: ArrayToRecord<OrderedAppliances<T>, 'name'>
+}
+
+export type AppliancesType<Plugins extends readonly (IShowcaseMakerPlugin<tmpBlinder>)[]> = ArrayToRecord<OrderedAppliances<Plugins>, 'name'>
+
+type ExtractConviences<T extends AppliancesType<IShowcaseMakerPlugin<tmpBlinder>[]>> = {
+    [K in keyof T]: Parameters<T[K]['convience']>
+}
+type ExtractArrayNthElements<T extends Record<string, unknown[]>, N extends number> = {
+    [K in keyof T]: T[K][N]
+}
+
+export type DefaultsType<T extends AppliancesType<IShowcaseMakerPlugin<tmpBlinder>[]>> = UnionToIntersection<
+    RecordValuesToUnion<
+        ExtractArrayNthElements<
+
+        FilterEmptyProperties<
+            ExtractConviences<T>, []
+        >
+        , 1>
+    >
+>

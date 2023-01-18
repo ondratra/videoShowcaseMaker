@@ -2,7 +2,8 @@ import {createOverlay} from '../tools/utils'
 import {asyncSequence} from '../tools/core/actions'
 import {IAsyncAction} from '../tools/plugin'
 import {IShowcaseMakerPlugin, IPluginAppliance} from '../tools/plugin'
-import {UnionToIntersection, RecordToValuesUnion} from '../tools/typeUtils'
+import {ArrayToRecord, FilterEmptyProperties, UnionToIntersection} from '../tools/typeUtils'
+import {AppliancesType, MySetupPluginsResult, OrderedAppliances} from './utils'
 
 export interface IVideoPlanParameters<Appliances> {
     appliances: Appliances
@@ -15,23 +16,6 @@ export interface IVideoPlan<Appliances> {
 // TODO: find a way to properly set this `Defaults` type
 export type tmpBlinder = any
 
-// internal types providing proper access to plugins
-
-type MyApplianceType<PluginType extends () => Promise<IPluginAppliance<tmpBlinder>>> = Awaited<ReturnType<PluginType>>
-type OrderedAppliances<T extends readonly IShowcaseMakerPlugin<tmpBlinder>[]> = { [Key in keyof T]: MyApplianceType<T[Key]>} & {name: string}[]
-type ArrayToRecord<Array extends readonly any[], Key extends keyof Array[number] & (string | number)> = {
-    [K in Array[number] as K[Key]]: K
-}
-type MySetupPluginsResult<T extends readonly IShowcaseMakerPlugin<tmpBlinder>[]> = {
-    appliancesOrdered: OrderedAppliances<T>
-    appliances: ArrayToRecord<OrderedAppliances<T>, 'name'>
-}
-
-export type AppliancesType<Plugins extends readonly (IShowcaseMakerPlugin<tmpBlinder>)[]> = ArrayToRecord<OrderedAppliances<Plugins>, 'name'>
-
-export type DefaultsType<T extends AppliancesType<IShowcaseMakerPlugin<tmpBlinder>[]>> = UnionToIntersection<RecordToValuesUnion<{
-    [K in keyof T]: Parameters<T[K]['convience']>[1]
-}>>
 
 export async function executePlan<
     Appliance extends AppliancesType<Plugins>,
@@ -106,7 +90,6 @@ async function setupPlugins<Setups extends Plugins, Plugins extends readonly (IS
     }, Promise.resolve([]) as Promise<OrderedAppliances<Setups>>)
 
     const appliances = appliancesOrdered.reduce((acc, item, index) => {
-        //(acc as Record<string, typeof item>)[item.name] = item // this underwhelming typecast is needed to fulfill type guards
         (acc as Record<string, typeof item>)[item.name] = item // this underwhelming typecast is needed to fulfill type guards
 
         return acc

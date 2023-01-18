@@ -1,4 +1,4 @@
-import {IPluginAppliance, IShowcaseMakerPlugin} from '../plugin'
+import {IPluginAppliance} from '../plugin'
 import * as setup from './setup'
 import {convience, IDefaults} from './convience'
 import * as rawActions from './actions'
@@ -22,7 +22,7 @@ export async function setupAll() {
 
     return {
         name: 'cursor' as const,
-        requiredPlugins: ['core'],
+        requiredPlugins: ['core', 'audio'],
         elements,
         actions,
         convience: convience(elements, actions),

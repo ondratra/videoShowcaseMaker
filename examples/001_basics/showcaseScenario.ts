@@ -1,12 +1,14 @@
 import {IAsyncAction, IShowcaseMakerPlugin} from '../../src/tools/plugin'
 
 import {
-    AppliancesType,
-    DefaultsType,
     IVideoPlan,
     IVideoPlanParameters,
     tmpBlinder
 } from '../../src/flows/executePlan'
+import {
+    AppliancesType,
+    DefaultsType,
+} from '../../src/flows/utils'
 import {mergeAppliancesCallables} from '../../src/flows/utils'
 import * as tools from '../../src/tools'
 
@@ -17,6 +19,7 @@ export const selectors = {
 export function getPlugins() {
     const plugins = [
         tools.core,
+        tools.audio,
         tools.cursor,
     ] as const
 
@@ -50,8 +53,6 @@ export function videoPlan(actionSettings: IVideoPlanParameters<MyAppliances>): I
         tmpActions.clickElement(selectors.exampleButton1),
         tmpActions.delay(),
 
-
-        tmpActions.delay(1_000_000),
 
         // ultimate test of typeguards
         //tmpActions.shouldThrowError(), // this should trigger compile-time error
