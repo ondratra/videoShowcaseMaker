@@ -38,6 +38,7 @@ export function videoPlan(actionSettings: IVideoPlanParameters<MyAppliances>): I
         duration: 1000,
         delayAfterClickEffect: 300,
         //clickEffectDuration: 1000,
+        clickSoundUrl: '../assets/click.ogg',
     }
 
     const {actions, actionsConvience} = mergeAppliancesCallables(actionSettings.appliances, defaults)
@@ -58,9 +59,3 @@ export function videoPlan(actionSettings: IVideoPlanParameters<MyAppliances>): I
         //tmpActions.shouldThrowError(), // this should trigger compile-time error
     ])
 }
-
-
-
-
-
-

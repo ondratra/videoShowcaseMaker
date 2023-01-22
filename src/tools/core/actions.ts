@@ -7,7 +7,6 @@ export const asyncSequence = (actions: IAsyncAction[]): IAsyncAction => () => ac
 
 export const asyncDontWait = (action: IAsyncAction): IAsyncAction => () => (action(), Promise.resolve())
 
-// TODO - what will distinguis action from convience? should be triggerElementClick action or convience?
 export const triggerElementClick = (selector: IElementSelector) => async () => {
     findElement(selector).click()
 }

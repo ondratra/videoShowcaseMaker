@@ -8,19 +8,14 @@ import {IPluginAppliance, IPluginConvience} from '../plugin'
 export interface IDefaults {
     duration: number
     delayAfterClickEffect: number
+    clickSoundUrl: string
 }
-
-// TODO: properly setup sound url / accept it somehow as a parameter
-const clickSoundUrl = 'https://cryptoformulas2.b-cdn.net/dev/audio/misc/click.ogg'
-
 
 // TODO: improve typeguard for pluginsLoaded - if possible, tie it with `requiredPlugins`
 export const convience = (elements: ICursorElements, actions: {runClickEffect: () => () => Promise<void>}) => (pluginsLoaded: Record<string, IPluginAppliance<unknown>>, defaults: IDefaults) => {
     const clickEffectOnly = pluginsLoaded.core.actions.asyncSequence([
         pluginsLoaded.core.actions.asyncDontWait(actions.runClickEffect()),
-        // TODO: enable after sound is imported
-        //() => cursorClickSound.start(clickSoundUrl),
-        pluginsLoaded.audio.actions.startPlayingAudio(clickSoundUrl),
+        pluginsLoaded.audio.actions.startPlayingAudio(defaults.clickSoundUrl),
         pluginsLoaded.core.actions.delay(defaults.delayAfterClickEffect), // give a head start to the visual effect
     ])
 
