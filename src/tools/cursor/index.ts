@@ -3,18 +3,14 @@ import * as setup from './setup'
 import {convience, IDefaults} from './convience'
 import * as rawActions from './actions'
 
-//export * as actions from './actions'
-export * as setup from './setup'
-
-// TODO remove this!!! somehow accept as parameter (probably already done in videoPlan)
-const defaults = {
-    clickEffectDuration: 1400,
+export interface IConfiguration {
+    clickEffectDuration: number,
 }
 
-export async function setupAll() {
+export const setupPlugin = (configuration: IConfiguration) => async () => {
     const elements = setup.createCursorElements()
     const actions = {
-        runClickEffect: () => setup.setupClickEffect(elements.clickEffectElement, defaults.clickEffectDuration),
+        runClickEffect: () => setup.setupClickEffect(elements.clickEffectElement, configuration.clickEffectDuration),
         ...rawActions
     }
 

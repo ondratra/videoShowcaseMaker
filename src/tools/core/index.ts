@@ -2,7 +2,7 @@ import {IPluginAppliance} from '../plugin'
 import * as actions from './actions'
 import {convience, IDefaultsa} from './convience'
 
-export async function setupAll() {
+export const setupPlugin = () => async () => {
     return {
         name: 'core',
         requiredPlugins: [],

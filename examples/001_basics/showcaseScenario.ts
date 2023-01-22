@@ -18,16 +18,12 @@ export const selectors = {
 
 export function getPlugins() {
     const plugins = [
-        tools.core,
-        tools.audio,
-        tools.cursor,
-    ] as const
+        tools.core.setupPlugin(),
+        tools.audio.setupPlugin(),
+        tools.cursor.setupPlugin({clickEffectDuration: 4000}),
+    ] as const satisfies readonly (IShowcaseMakerPlugin<tmpBlinder>)[]
 
-    type SetupAllArray<T extends typeof plugins> = {[K in keyof T]: T[K]['setupAll'] }
-
-    const pluginSetups = plugins.map(item => item.setupAll) as unknown as SetupAllArray<typeof plugins> satisfies readonly (IShowcaseMakerPlugin<tmpBlinder>)[] // TODO: try to get rid of `unknown` (tuple typings problem here)
-
-    return pluginSetups
+    return plugins
 }
 
 type MyAppliances = AppliancesType<ReturnType<typeof getPlugins>>
@@ -37,7 +33,6 @@ export function videoPlan(actionSettings: IVideoPlanParameters<MyAppliances>): I
     const defaults: DefaultsType<MyAppliances> = {
         duration: 1000,
         delayAfterClickEffect: 300,
-        //clickEffectDuration: 1000,
         clickSoundUrl: '../assets/click.ogg',
     }
 
