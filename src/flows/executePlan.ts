@@ -1,5 +1,5 @@
 import {createOverlay} from '../tools/utils'
-import {asyncSequence} from '../tools/core/actions'
+import {asyncSequence} from '../tools/core/primitives'
 import {IAsyncAction} from '../tools/plugin'
 import {ArrayToRecord, FilterEmptyProperties, UnionToIntersection} from '../tools/typeUtils'
 import {AppliancesType, MySetupPluginsResult, OrderedAppliances, ReadonlyPluginsBase, PluginsBase} from './utils'
@@ -9,7 +9,7 @@ export interface IVideoPlanParameters<Plugins extends PluginsBase> {
 }
 
 export interface IVideoPlan<Plugins extends PluginsBase> {
-    (actionSettings: IVideoPlanParameters<Plugins>): IAsyncAction
+    (primitiveSettings: IVideoPlanParameters<Plugins>): IAsyncAction
 }
 
 export async function executePlan<
@@ -57,7 +57,8 @@ async function setupPlugins<Plugins extends ReadonlyPluginsBase>(pluginsToSetup:
     //       BEFORE plugin that requires it
     //
     //       such typeguard will need more research and will likely take
-    //       quite time to implement
+    //       quite time to implement - working with tuple types is still
+    //       not ideal in typescript
     function detectMissingRequiredPlugins(loadedPlugins: OrderedAppliances<Plugins>, requiredPlugins: readonly string[]): string[] {
         return requiredPlugins.reduce((acc, requiredPluginName) => acc.concat(
             loadedPlugins.find(item => item.name == requiredPluginName)

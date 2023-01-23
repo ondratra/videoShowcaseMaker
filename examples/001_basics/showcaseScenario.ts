@@ -33,21 +33,21 @@ export function videoPlan(actionSettings: IVideoPlanParameters<PluginsType>): IA
         clickSoundUrl: '../assets/click.ogg',
     }
 
-    const {actions, actionsConvience} = mergeAppliancesCallables(actionSettings.appliances, defaults)
+    const {primitives, composites} = mergeAppliancesCallables(actionSettings.appliances, defaults)
 
-    // conviences overwrite actions of the same name
-    // use `actionSettings.appliances.myPlugin.actions.myAction`
-    // to get access to overwritten action (or actionsConvience)
-    const tmpActions = {...actions, ...actionsConvience}
+    // composites overwrite primitives of the same name
+    // use `actionSettings.appliances.myPlugin.primitives.myAction`
+    // to get access to overwritten primitives (or composites)
+    const actions = {...primitives, ...composites}
 
-    return tmpActions.asyncSequence([
+    return actions.asyncSequence([
         // click example button
-        tmpActions.moveCursorToElement(selectors.exampleButton1),
-        tmpActions.clickElement(selectors.exampleButton1),
-        tmpActions.delay(),
+        actions.moveCursorToElement(selectors.exampleButton1),
+        actions.clickElement(selectors.exampleButton1),
+        actions.delay(),
 
 
         // ultimate test of typeguards
-        //tmpActions.shouldThrowError(), // this should trigger compile-time error
+        //actions.shouldThrowError(), // this should trigger compile-time error
     ])
 }

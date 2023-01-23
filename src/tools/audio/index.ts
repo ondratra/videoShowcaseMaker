@@ -7,7 +7,7 @@
 
 import {IPluginAppliance, IPluginElements} from '../plugin'
 import {BlockingSound} from './BlockingSound'
-import {getActions} from './actions'
+import {getActions} from './primitives'
 
 export interface IDefaults {}
 
@@ -18,8 +18,8 @@ export const setupPlugin = () => async () => {
         name: 'audio' as const,
         requiredPlugins: [],
         elements: {},
-        actions: getActions(blockingSound),
-        convience: () => {},
+        primitives: getActions(blockingSound),
+        composites: () => {},
         destroy: async () => {},
     } as const satisfies IPluginAppliance<IDefaults>
 }

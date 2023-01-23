@@ -1,7 +1,7 @@
 import {IPluginAppliance} from '../plugin'
 import * as setup from './setup'
-import {convience, IDefaults} from './convience'
-import * as rawActions from './actions'
+import {composites, IDefaults} from './composites'
+import * as rawActions from './primitives'
 
 export interface IConfiguration {
     clickEffectDuration: number,
@@ -9,7 +9,7 @@ export interface IConfiguration {
 
 export const setupPlugin = (configuration: IConfiguration) => async () => {
     const elements = setup.createCursorElements()
-    const actions = {
+    const primitives = {
         runClickEffect: () => setup.setupClickEffect(elements.clickEffectElement, configuration.clickEffectDuration),
         ...rawActions
     }
@@ -20,8 +20,8 @@ export const setupPlugin = (configuration: IConfiguration) => async () => {
         name: 'cursor' as const,
         requiredPlugins: ['core', 'audio'],
         elements,
-        actions,
-        convience: convience(elements, actions),
+        primitives,
+        composites: composites(elements, primitives),
         destroy: async () => {
             clearHoverInterval()
         },

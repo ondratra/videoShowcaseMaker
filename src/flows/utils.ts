@@ -13,58 +13,58 @@ export type ReadonlyPluginsBase = Readonly<PluginsBase>
 
 type RecordAppliances = Record<string, IPluginAppliance<UnknownDefaults>>
 
-type Conviences<Appliances extends RecordAppliances> = {[Key in keyof Appliances]: Appliances[Key]['convience']}
-type ConvienceActionsTypeRecord<Appliances extends RecordAppliances> = {[Key in keyof Conviences<Appliances>]: ReturnType<Conviences<Appliances>[Key]>}
-type ConvienceActionsType<Appliances extends RecordAppliances> = SimpleFlatten<ConvienceActionsTypeRecord<Appliances>>
+type Composites<Appliances extends RecordAppliances> = {[Key in keyof Appliances]: Appliances[Key]['composites']}
+type CompositeActionsTypeRecord<Appliances extends RecordAppliances> = {[Key in keyof Composites<Appliances>]: ReturnType<Composites<Appliances>[Key]>}
+type CompositeActionsType<Appliances extends RecordAppliances> = SimpleFlatten<CompositeActionsTypeRecord<Appliances>>
 
-type Actions<Appliances extends RecordAppliances> = {[Key in keyof Appliances]: Appliances[Key]['actions']}
+type Actions<Appliances extends RecordAppliances> = {[Key in keyof Appliances]: Appliances[Key]['primitives']}
 type ActionsTypeRecord<Appliances extends RecordAppliances> = {[Key in keyof Actions<Appliances>]: Actions<Appliances>[Key]}
 type ActionsType<Appliances extends RecordAppliances> = SimpleFlatten<ActionsTypeRecord<Appliances>>
 
-function getAppliancesActionsConvience<Appliances extends RecordAppliances>(appliances: Appliances, defaults: AppliancesDefaultsType<Appliances>) {
-    type ConvienceActionsTypeTmp = ConvienceActionsType<Appliances>
+function getAppliancesActionsComposite<Appliances extends RecordAppliances>(appliances: Appliances, defaults: AppliancesDefaultsType<Appliances>) {
+    type CompositeActionsTypeTmp = CompositeActionsType<Appliances>
 
-    const actionsConvience = Object.keys(appliances)
-        .reduce<[ConvienceActionsTypeTmp, any]>((acc: [ConvienceActionsTypeTmp, any], item) => {
+    const primitivesComposite = Object.keys(appliances)
+        .reduce<[CompositeActionsTypeTmp, any]>((acc: [CompositeActionsTypeTmp, any], item) => {
             const applianceName = item as keyof Appliances
 
-            const [conviences, pluginsLoaded] = acc
+            const [composites, pluginsLoaded] = acc
 
-            const newConvience = appliances[applianceName].convience(pluginsLoaded, defaults)
+            const newComposite = appliances[applianceName].composites(pluginsLoaded, defaults)
 
             return [
-                {...conviences, ...newConvience},
+                {...composites, ...newComposite},
                 {...pluginsLoaded, [applianceName]: appliances[applianceName]},
             ]
-        }, [{}, {}] as [ConvienceActionsTypeTmp, any])[0]
+        }, [{}, {}] as [CompositeActionsTypeTmp, any])[0]
 
-    return actionsConvience
+    return primitivesComposite
 }
 
 function getAppliancesActions<Appliances extends RecordAppliances>(appliances: Appliances, defaults: AppliancesDefaultsType<Appliances>) {
     type ActionsTypeTmp = ActionsType<Appliances>
 
-    const actions = Object.keys(appliances)
+    const primitives = Object.keys(appliances)
         .reduce<[ActionsTypeTmp, any]>((acc: [ActionsTypeTmp, any], item) => {
             const applianceName = item as keyof Appliances
 
-            const [conviences, pluginsLoaded] = acc
+            const [composites, pluginsLoaded] = acc
 
-            const newConvience = appliances[applianceName].actions
+            const newComposite = appliances[applianceName].primitives
 
             return [
-                {...conviences, ...newConvience},
+                {...composites, ...newComposite},
                 {...pluginsLoaded, [applianceName]: appliances[applianceName]},
             ]
         }, [{}, {}] as [ActionsTypeTmp, any])[0]
 
-    return actions
+    return primitives
 }
 
 export function mergeAppliancesCallables<Appliances extends RecordAppliances>(appliances: Appliances, defaults: AppliancesDefaultsType<Appliances>) {
     return {
-        actions: getAppliancesActions(appliances, defaults),
-        actionsConvience: getAppliancesActionsConvience(appliances, defaults),
+        primitives: getAppliancesActions(appliances, defaults),
+        composites: getAppliancesActionsComposite(appliances, defaults),
     }
 }
 
@@ -81,8 +81,8 @@ export type MySetupPluginsResult<T extends ReadonlyPluginsBase> = {
 
 export type AppliancesType<Plugins extends ReadonlyPluginsBase> = ArrayToRecord<OrderedAppliances<Plugins>, 'name'>
 
-type ExtractConviences<T extends AppliancesType<PluginsBase>> = {
-    [K in keyof T]: Parameters<T[K]['convience']>
+type ExtractComposites<T extends AppliancesType<PluginsBase>> = {
+    [K in keyof T]: Parameters<T[K]['composites']>
 }
 type ExtractArrayNthElements<T extends Record<string, unknown[]>, N extends number> = {
     [K in keyof T]: T[K][N]
@@ -93,7 +93,7 @@ export type AppliancesDefaultsType<T extends AppliancesType<PluginsBase>> = Unio
         ExtractArrayNthElements<
 
         FilterEmptyProperties<
-            ExtractConviences<T>, []
+            ExtractComposites<T>, []
         >
         , 1>
     >
