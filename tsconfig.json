@@ -6,13 +6,16 @@
     "strict": true,
     "outDir": "dist",
     "rootDir": ".",
+    "baseUrl": ".",
     "moduleResolution": "node",
     "isolatedModules": true,
-    "declaration": true,
+    "declaration": false,
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
+
     "paths": {
-      "~/*": ["./src/*", "./examples/*"]
+      "videoShowcaseMaker": ["dist/index"]
     }
-  }
+  },
+  "include": ["rollup.config.ts"]
 }
