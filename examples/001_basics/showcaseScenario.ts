@@ -1,15 +1,13 @@
-import {IAsyncAction, IShowcaseMakerPlugin} from '../../src/tools/plugin'
-
 import {
+    corePlugins,
+    mergeAppliancesCallables,
+    DefaultsType,
+    ReadonlyPluginsBase,
+    IAsyncAction,
+    IShowcaseMakerPlugin,
     IVideoPlan,
     IVideoPlanParameters,
-} from '../../src/flows/executePlan'
-import {
-    AppliancesType,
-    DefaultsType,
-} from '../../src/flows/utils'
-import {mergeAppliancesCallables, ReadonlyTmpPlugins} from '../../src/flows/utils'
-import * as tools from '../../src/tools'
+} from '../../src'
 
 export const selectors = {
     exampleButton1: '#exampleButton1'
@@ -17,19 +15,19 @@ export const selectors = {
 
 export function getPlugins() {
     const plugins = [
-        tools.core.setupPlugin(),
-        tools.audio.setupPlugin(),
-        tools.cursor.setupPlugin({clickEffectDuration: 4000}),
-    ] as const satisfies ReadonlyTmpPlugins
+        corePlugins.core.setupPlugin(),
+        corePlugins.audio.setupPlugin(),
+        corePlugins.cursor.setupPlugin({clickEffectDuration: 4000}),
+    ] as const satisfies ReadonlyPluginsBase
 
     return plugins
 }
 
-type MyAppliances = AppliancesType<ReturnType<typeof getPlugins>>
+type PluginsType = ReturnType<typeof getPlugins>
 
 // TODO: rename videoPlan to showcasePlan
-export function videoPlan(actionSettings: IVideoPlanParameters<MyAppliances>): IAsyncAction {
-    const defaults: DefaultsType<MyAppliances> = {
+export function videoPlan(actionSettings: IVideoPlanParameters<PluginsType>): IAsyncAction {
+    const defaults: DefaultsType<PluginsType> = {
         duration: 1000,
         delayAfterClickEffect: 300,
         clickSoundUrl: '../assets/click.ogg',

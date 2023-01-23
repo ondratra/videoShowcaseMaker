@@ -2,20 +2,19 @@ import {createOverlay} from '../tools/utils'
 import {asyncSequence} from '../tools/core/actions'
 import {IAsyncAction} from '../tools/plugin'
 import {ArrayToRecord, FilterEmptyProperties, UnionToIntersection} from '../tools/typeUtils'
-import {AppliancesType, MySetupPluginsResult, OrderedAppliances, ReadonlyTmpPlugins, TmpPlugins} from './utils'
+import {AppliancesType, MySetupPluginsResult, OrderedAppliances, ReadonlyPluginsBase, PluginsBase} from './utils'
 
-export interface IVideoPlanParameters<Appliances> {
-    appliances: Appliances
+export interface IVideoPlanParameters<Plugins extends PluginsBase> {
+    appliances: AppliancesType<Plugins>
 }
 
-export interface IVideoPlan<Appliances> {
-    (actionSettings: IVideoPlanParameters<Appliances>): IAsyncAction
+export interface IVideoPlan<Plugins extends PluginsBase> {
+    (actionSettings: IVideoPlanParameters<Plugins>): IAsyncAction
 }
 
 export async function executePlan<
-    Appliance extends AppliancesType<Plugins>,
-    Plugins extends TmpPlugins,
->(videoPlan: IVideoPlan<Appliance>, plugins: Plugins): Promise<void> {
+    Plugins extends PluginsBase,
+>(videoPlan: IVideoPlan<Plugins>, plugins: Plugins): Promise<void> {
     // setup plugins
     const {appliancesOrdered, appliances} = await setupPlugins(plugins)
 
@@ -35,7 +34,7 @@ export async function executePlan<
     const resultPromise = new Promise<void>((resolve) => {
         setTimeout(async () => {
             // execute plan
-            await videoPlan({appliances} as any)() // TODO: get rid of any
+            await videoPlan({appliances})()
 
             // clean everything plugins need
             asyncSequence(appliancesOrdered.map(item => item.destroy))
@@ -52,14 +51,14 @@ console.log('cleaer')
     await resultPromise
 }
 
-async function setupPlugins<Setups extends Plugins, Plugins extends ReadonlyTmpPlugins>(pluginsToSetup: Setups): Promise<MySetupPluginsResult<Setups>> {
+async function setupPlugins<Plugins extends ReadonlyPluginsBase>(pluginsToSetup: Plugins): Promise<MySetupPluginsResult<Plugins>> {
     // TODO: explore posibilities to add type check for `requiredPlugins`
     //       that ensures all required plugins are present in appliances
     //       BEFORE plugin that requires it
     //
     //       such typeguard will need more research and will likely take
     //       quite time to implement
-    function detectMissingRequiredPlugins(loadedPlugins: OrderedAppliances<Setups>, requiredPlugins: readonly string[]): string[] {
+    function detectMissingRequiredPlugins(loadedPlugins: OrderedAppliances<Plugins>, requiredPlugins: readonly string[]): string[] {
         return requiredPlugins.reduce((acc, requiredPluginName) => acc.concat(
             loadedPlugins.find(item => item.name == requiredPluginName)
                 ? []
@@ -82,13 +81,13 @@ async function setupPlugins<Setups extends Plugins, Plugins extends ReadonlyTmpP
         acc.push(appliance)
 
         return acc
-    }, Promise.resolve([]) as Promise<OrderedAppliances<Setups>>)
+    }, Promise.resolve([]) as Promise<OrderedAppliances<Plugins>>)
 
     const appliances = appliancesOrdered.reduce((acc, item, index) => {
         (acc as Record<string, typeof item>)[item.name] = item // this underwhelming typecast is needed to fulfill type guards
 
         return acc
-    }, {} as ArrayToRecord<OrderedAppliances<Setups>, 'name'>)
+    }, {} as ArrayToRecord<OrderedAppliances<Plugins>, 'name'>)
 
     return {appliancesOrdered, appliances}
 }

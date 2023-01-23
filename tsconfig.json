@@ -8,6 +8,7 @@
     "rootDir": ".",
     "moduleResolution": "node",
     "isolatedModules": true,
+    "declaration": true,
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
     "paths": {
