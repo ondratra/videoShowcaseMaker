@@ -1,9 +1,8 @@
 import {createOverlay} from '../tools/utils'
 import {asyncSequence} from '../tools/core/actions'
 import {IAsyncAction} from '../tools/plugin'
-import {IShowcaseMakerPlugin, IPluginAppliance} from '../tools/plugin'
 import {ArrayToRecord, FilterEmptyProperties, UnionToIntersection} from '../tools/typeUtils'
-import {AppliancesType, MySetupPluginsResult, OrderedAppliances} from './utils'
+import {AppliancesType, MySetupPluginsResult, OrderedAppliances, ReadonlyTmpPlugins, TmpPlugins} from './utils'
 
 export interface IVideoPlanParameters<Appliances> {
     appliances: Appliances
@@ -13,13 +12,9 @@ export interface IVideoPlan<Appliances> {
     (actionSettings: IVideoPlanParameters<Appliances>): IAsyncAction
 }
 
-// TODO: find a way to properly set this `Defaults` type
-export type tmpBlinder = any
-
-
 export async function executePlan<
     Appliance extends AppliancesType<Plugins>,
-    Plugins extends readonly (IShowcaseMakerPlugin<tmpBlinder>)[],
+    Plugins extends TmpPlugins,
 >(videoPlan: IVideoPlan<Appliance>, plugins: Plugins): Promise<void> {
     // setup plugins
     const {appliancesOrdered, appliances} = await setupPlugins(plugins)
@@ -57,7 +52,7 @@ console.log('cleaer')
     await resultPromise
 }
 
-async function setupPlugins<Setups extends Plugins, Plugins extends readonly (IShowcaseMakerPlugin<tmpBlinder>)[]>(pluginsToSetup: Setups): Promise<MySetupPluginsResult<Setups>> {
+async function setupPlugins<Setups extends Plugins, Plugins extends ReadonlyTmpPlugins>(pluginsToSetup: Setups): Promise<MySetupPluginsResult<Setups>> {
     // TODO: explore posibilities to add type check for `requiredPlugins`
     //       that ensures all required plugins are present in appliances
     //       BEFORE plugin that requires it

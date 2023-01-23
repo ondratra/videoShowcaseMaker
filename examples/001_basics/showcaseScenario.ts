@@ -3,13 +3,12 @@ import {IAsyncAction, IShowcaseMakerPlugin} from '../../src/tools/plugin'
 import {
     IVideoPlan,
     IVideoPlanParameters,
-    tmpBlinder
 } from '../../src/flows/executePlan'
 import {
     AppliancesType,
     DefaultsType,
 } from '../../src/flows/utils'
-import {mergeAppliancesCallables} from '../../src/flows/utils'
+import {mergeAppliancesCallables, ReadonlyTmpPlugins} from '../../src/flows/utils'
 import * as tools from '../../src/tools'
 
 export const selectors = {
@@ -21,7 +20,7 @@ export function getPlugins() {
         tools.core.setupPlugin(),
         tools.audio.setupPlugin(),
         tools.cursor.setupPlugin({clickEffectDuration: 4000}),
-    ] as const satisfies readonly (IShowcaseMakerPlugin<tmpBlinder>)[]
+    ] as const satisfies ReadonlyTmpPlugins
 
     return plugins
 }

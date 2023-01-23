@@ -1,9 +1,13 @@
 import {IPluginAppliance, IShowcaseMakerPlugin} from '../../src/tools/plugin'
-import {tmpBlinder} from './executePlan'
 import {ArrayToRecord, SimpleFlatten} from '../../src/tools/typeUtils'
 import {FilterEmptyProperties, UnionToIntersection, RecordValuesToUnion} from '../tools/typeUtils'
 
-type RecordAppliances = Record<string, IPluginAppliance<tmpBlinder>>
+type UnknownDefaults = any
+
+export type TmpPlugins = readonly IShowcaseMakerPlugin<UnknownDefaults>[]
+export type ReadonlyTmpPlugins = Readonly<TmpPlugins>
+
+type RecordAppliances = Record<string, IPluginAppliance<UnknownDefaults>>
 
 type Conviences<Appliances extends RecordAppliances> = {[Key in keyof Appliances]: Appliances[Key]['convience']}
 type ConvienceActionsTypeRecord<Appliances extends RecordAppliances> = {[Key in keyof Conviences<Appliances>]: ReturnType<Conviences<Appliances>[Key]>}
@@ -60,29 +64,27 @@ export function mergeAppliancesCallables<Appliances extends RecordAppliances>(ap
     }
 }
 
-
-
 // internal types providing proper access to plugins
 
-type MyApplianceType<PluginType extends () => Promise<IPluginAppliance<tmpBlinder>>> = Awaited<ReturnType<PluginType>>
+type MyApplianceType<PluginType extends IShowcaseMakerPlugin<UnknownDefaults>> = Awaited<ReturnType<PluginType>>
 
-export type OrderedAppliances<T extends readonly IShowcaseMakerPlugin<tmpBlinder>[]> = { [Key in keyof T]: MyApplianceType<T[Key]>} & {name: string}[]
+export type OrderedAppliances<T extends ReadonlyTmpPlugins> = { [Key in keyof T]: MyApplianceType<T[Key]>} & {name: string}[]
 
-export type MySetupPluginsResult<T extends readonly IShowcaseMakerPlugin<tmpBlinder>[]> = {
+export type MySetupPluginsResult<T extends ReadonlyTmpPlugins> = {
     appliancesOrdered: OrderedAppliances<T>
     appliances: ArrayToRecord<OrderedAppliances<T>, 'name'>
 }
 
-export type AppliancesType<Plugins extends readonly (IShowcaseMakerPlugin<tmpBlinder>)[]> = ArrayToRecord<OrderedAppliances<Plugins>, 'name'>
+export type AppliancesType<Plugins extends ReadonlyTmpPlugins> = ArrayToRecord<OrderedAppliances<Plugins>, 'name'>
 
-type ExtractConviences<T extends AppliancesType<IShowcaseMakerPlugin<tmpBlinder>[]>> = {
+type ExtractConviences<T extends AppliancesType<TmpPlugins>> = {
     [K in keyof T]: Parameters<T[K]['convience']>
 }
 type ExtractArrayNthElements<T extends Record<string, unknown[]>, N extends number> = {
     [K in keyof T]: T[K][N]
 }
 
-export type DefaultsType<T extends AppliancesType<IShowcaseMakerPlugin<tmpBlinder>[]>> = UnionToIntersection<
+export type DefaultsType<T extends AppliancesType<TmpPlugins>> = UnionToIntersection<
     RecordValuesToUnion<
         ExtractArrayNthElements<
 
