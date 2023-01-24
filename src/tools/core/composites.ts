@@ -1,6 +1,6 @@
-import {mbDefault} from '../utils'
-import {delay} from './primitives'
-import {IPluginAppliance} from '../plugin'
+import { mbDefault } from '../utils'
+import { delay } from './primitives'
+import { IPluginAppliance } from '../plugin'
 
 export interface IDefaultsa {
     duration: number

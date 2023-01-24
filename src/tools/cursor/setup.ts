@@ -1,5 +1,5 @@
-import {IPluginElements} from '../plugin'
-import {createOverlay} from '../utils'
+import { IPluginElements } from '../plugin'
+import { createOverlay } from '../utils'
 
 export interface ICursorElements extends IPluginElements {
     cursorContainer: HTMLElement
@@ -65,33 +65,37 @@ export function createCursorElements(): ICursorElements {
         cursorContainer,
         cursorElement,
         clickEffectElement,
-        overlayElement
+        overlayElement,
     }
 }
 
 export function setupClickEffect(clickEffectElement: HTMLElement, duration: number): () => Promise<void> {
-    const transitionListener = (resolve: () => void, onEnd: () => Promise<void>) => async function myListener() {
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        clickEffectElement.removeEventListener('transitionend', myListener)
+    const transitionListener = (resolve: () => void, onEnd: () => Promise<void>) =>
+        async function myListener() {
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            clickEffectElement.removeEventListener('transitionend', myListener)
 
-        clickEffectElement.style.transitionDuration = '0ms'
-        clickEffectElement.style.stroke = '#aaa'
-        clickEffectElement.style.transform = 'scale(0)'
-        await onEnd()
-        resolve()
-    }
+            clickEffectElement.style.transitionDuration = '0ms'
+            clickEffectElement.style.stroke = '#aaa'
+            clickEffectElement.style.transform = 'scale(0)'
+            await onEnd()
+            resolve()
+        }
 
-    const runCursorClickEffect = () => new Promise<void>(resolve => {
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        clickEffectElement.addEventListener('transitionend', transitionListener(resolve, async () => {}))
-        clickEffectElement.style.transitionDuration = duration + 'ms'
-        clickEffectElement.style.stroke = 'transparent'
-        clickEffectElement.style.transform = 'scale(1)'
-    })
+    const runCursorClickEffect = () =>
+        new Promise<void>((resolve) => {
+            clickEffectElement.addEventListener(
+                'transitionend',
+                // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                transitionListener(resolve, async () => {}),
+            )
+            clickEffectElement.style.transitionDuration = duration + 'ms'
+            clickEffectElement.style.stroke = 'transparent'
+            clickEffectElement.style.transform = 'scale(1)'
+        })
 
     return runCursorClickEffect
 }
-
 
 export function setupHoverEffect(cursorElements: ICursorElements): () => void {
     const interval = 50
@@ -104,14 +108,13 @@ export function setupHoverEffect(cursorElements: ICursorElements): () => void {
     return clearEffect
 }
 
-
 function prepareVirtualStyles(cursorContainer: HTMLElement, hoverClass: string) {
     const filter = (item: CSSStyleRule) => !!item.selectorText && !!item.selectorText.match(/:hover/)
     const rules = getCssRules(filter)
 
     const rulesText = rules
-        .map(item => item.cssText)
-        .map(item => item.replace(':hover', '.' + hoverClass))
+        .map((item) => item.cssText)
+        .map((item) => item.replace(':hover', '.' + hoverClass))
         .join('\n')
 
     const styleElement = document.createElement('style')
@@ -130,16 +133,10 @@ function getCssRules(filter: (rule: CSSStyleRule) => boolean): CSSStyleRule[] {
                 return innerAcc
             }
 
-            return [
-                ...innerAcc,
-                rule,
-            ]
+            return [...innerAcc, rule]
         }, [] as CSSStyleRule[])
 
-        return [
-            ...acc,
-            ...styleSheetRules,
-        ]
+        return [...acc, ...styleSheetRules]
     }, [] as CSSStyleRule[])
 
     return rules
@@ -166,7 +163,6 @@ function prepareHoverInterval(cursorElement: HTMLElement, interval: number, hove
 
         lastElement = elementMouseIsOver
     }, interval)
-
 
     const clearEffect = () => clearInterval(hoverInterval)
 

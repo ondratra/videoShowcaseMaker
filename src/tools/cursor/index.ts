@@ -1,17 +1,17 @@
-import {IPluginAppliance} from '../plugin'
+import { IPluginAppliance } from '../plugin'
 import * as setup from './setup'
-import {composites, IDefaults} from './composites'
+import { composites, IDefaults } from './composites'
 import * as rawActions from './primitives'
 
 export interface IConfiguration {
-    clickEffectDuration: number,
+    clickEffectDuration: number
 }
 
 export const setupPlugin = (configuration: IConfiguration) => async () => {
     const elements = setup.createCursorElements()
     const primitives = {
         runClickEffect: () => setup.setupClickEffect(elements.clickEffectElement, configuration.clickEffectDuration),
-        ...rawActions
+        ...rawActions,
     }
 
     const clearHoverInterval = setup.setupHoverEffect(elements)

@@ -1,6 +1,6 @@
-import {IPluginAppliance} from '../plugin'
+import { IPluginAppliance } from '../plugin'
 import * as primitives from './primitives'
-import {composites, IDefaultsa} from './composites'
+import { composites, IDefaultsa } from './composites'
 
 export const setupPlugin = () => async () => {
     return {

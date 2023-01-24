@@ -6,8 +6,9 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c rollup.config.ts --configPlugin typescript",
-    "checks": "yarn checks:lint",
+    "checks": "yarn checks:lint && yarn checks:format",
     "checks:lint": "eslint \"src/**/*.ts*\"",
+    "checks:format": "prettier --check .",
     "examplesServer": "http-server -c-1",
     "watch": "yarn build -w"
   },
@@ -17,8 +18,11 @@
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
     "eslint": "^8.32.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "glob": "^8.0.3",
     "http-server": "^14.1.1",
+    "prettier": "^2.8.3",
     "rollup": "^3.10.0",
     "rollup-plugin-dts": "^5.1.1",
     "tslib": "^2.4.1",

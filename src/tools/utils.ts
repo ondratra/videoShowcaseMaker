@@ -1,4 +1,3 @@
-
 export function createOverlay(name: string, content?: string, styles?: string): HTMLElement {
     const overlayElement = document.createElement('div')
     overlayElement.id = 'videoOverlay_' + name
@@ -10,9 +9,7 @@ export function createOverlay(name: string, content?: string, styles?: string): 
     overlayElement.style.top = '0px'
     overlayElement.style.pointerEvents = 'none'
 
-    overlayElement.innerHTML = ''
-        + (content || '')
-        + (styles ? `<style>${styles}</style>` : '')
+    overlayElement.innerHTML = '' + (content || '') + (styles ? `<style>${styles}</style>` : '')
 
     return overlayElement
 }
@@ -31,4 +28,5 @@ export function findElement(selector: IElementSelector): HTMLElement {
     return result
 }
 
-export const mbDefault = <T>(value: T | undefined, defaultValue: T): T => typeof value == 'undefined' ? defaultValue : value
+export const mbDefault = <T>(value: T | undefined, defaultValue: T): T =>
+    typeof value == 'undefined' ? defaultValue : value

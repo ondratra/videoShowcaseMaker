@@ -1,5 +1,4 @@
 export class BlockingSound {
-
     private audioElement: HTMLAudioElement
     private audioStartPromise: Promise<void> = Promise.resolve()
     private audioFinishPromise: Promise<void> = Promise.resolve()
@@ -15,16 +14,24 @@ export class BlockingSound {
         this.audioElement.pause()
 
         this.audioStartPromise = new Promise<void>((resolve) => {
-            this.audioElement.addEventListener('canplaythrough', () => {
-                this.audioElement.play()
-                resolve()
-            }, {once: true})
+            this.audioElement.addEventListener(
+                'canplaythrough',
+                () => {
+                    this.audioElement.play()
+                    resolve()
+                },
+                { once: true },
+            )
         })
 
         this.audioFinishPromise = new Promise<void>((resolve) => {
-            this.audioElement.addEventListener('pause', () => {
-                resolve()
-            }, {once: true})
+            this.audioElement.addEventListener(
+                'pause',
+                () => {
+                    resolve()
+                },
+                { once: true },
+            )
         })
 
         this.audioElement.src = url
