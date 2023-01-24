@@ -1,6 +1,6 @@
 import { IPluginAppliance, IShowcaseMakerPlugin } from '../../src/tools/plugin'
 import { ArrayToRecord, SimpleFlatten } from '../../src/tools/typeUtils'
-import { FilterEmptyProperties, UnionToIntersection, RecordValuesToUnion } from '../tools/typeUtils'
+import { FilterEmptyProperties, RecordValuesToUnion, UnionToIntersection } from '../tools/typeUtils'
 
 /////////////////// Aliases ////////////////////////////////////////////////////
 

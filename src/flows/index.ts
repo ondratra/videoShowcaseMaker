@@ -1,4 +1,4 @@
-export { executePlan } from './executePlan'
 export type { IVideoPlan, IVideoPlanParameters } from './executePlan'
-export { mergeAppliancesCallables } from './utils'
+export { executePlan } from './executePlan'
 export type { DefaultsType, ReadonlyPluginsBase } from './utils'
+export { mergeAppliancesCallables } from './utils'

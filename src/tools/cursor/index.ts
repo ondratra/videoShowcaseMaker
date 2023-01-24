@@ -1,7 +1,7 @@
 import { IPluginAppliance } from '../plugin'
-import * as setup from './setup'
 import { composites, IDefaults } from './composites'
 import * as rawActions from './primitives'
+import * as setup from './setup'
 
 export interface IConfiguration {
     clickEffectDuration: number

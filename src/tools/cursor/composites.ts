@@ -1,7 +1,7 @@
+import { IPluginAppliance } from '../plugin'
 import { IElementSelector, mbDefault } from '../utils'
 import { ITargetPosition, moveCursorTo, moveCursorToElement } from './primitives'
 import { ICursorElements } from './setup'
-import { IPluginAppliance } from '../plugin'
 
 export interface IDefaults {
     duration: number

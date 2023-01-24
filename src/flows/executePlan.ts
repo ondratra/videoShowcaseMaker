@@ -1,8 +1,8 @@
-import { createOverlay } from '../tools/utils'
 import { asyncSequence } from '../tools/core/primitives'
 import { IAsyncAction } from '../tools/plugin'
 import { ArrayToRecord } from '../tools/typeUtils'
-import { AppliancesType, MySetupPluginsResult, OrderedAppliances, ReadonlyPluginsBase, PluginsBase } from './utils'
+import { createOverlay } from '../tools/utils'
+import { AppliancesType, MySetupPluginsResult, OrderedAppliances, PluginsBase, ReadonlyPluginsBase } from './utils'
 
 export interface IVideoPlanParameters<Plugins extends PluginsBase> {
     appliances: AppliancesType<Plugins>
