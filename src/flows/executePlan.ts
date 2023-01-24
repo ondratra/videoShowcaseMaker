@@ -1,7 +1,7 @@
 import {createOverlay} from '../tools/utils'
 import {asyncSequence} from '../tools/core/primitives'
 import {IAsyncAction} from '../tools/plugin'
-import {ArrayToRecord, FilterEmptyProperties, UnionToIntersection} from '../tools/typeUtils'
+import {ArrayToRecord} from '../tools/typeUtils'
 import {AppliancesType, MySetupPluginsResult, OrderedAppliances, ReadonlyPluginsBase, PluginsBase} from './utils'
 
 export interface IVideoPlanParameters<Plugins extends PluginsBase> {
@@ -32,6 +32,7 @@ export async function executePlan<
 
     // setTimeout needed to workaround some video start issues
     const resultPromise = new Promise<void>((resolve) => {
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         setTimeout(async () => {
             // execute plan
             await videoPlan({appliances})()
@@ -84,7 +85,7 @@ async function setupPlugins<Plugins extends ReadonlyPluginsBase>(pluginsToSetup:
         return acc
     }, Promise.resolve([]) as Promise<OrderedAppliances<Plugins>>)
 
-    const appliances = appliancesOrdered.reduce((acc, item, index) => {
+    const appliances = appliancesOrdered.reduce((acc, item) => {
         (acc as Record<string, typeof item>)[item.name] = item // this underwhelming typecast is needed to fulfill type guards
 
         return acc

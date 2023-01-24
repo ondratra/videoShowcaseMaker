@@ -6,12 +6,17 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c rollup.config.ts --configPlugin typescript",
-    "watch": "yarn build -w",
-    "examplesServer": "http-server -c-1"
+    "checks": "yarn checks:lint",
+    "checks:lint": "eslint \"src/**/*.ts*\"",
+    "examplesServer": "http-server -c-1",
+    "watch": "yarn build -w"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.0.0",
     "@types/glob": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.49.0",
+    "@typescript-eslint/parser": "^5.49.0",
+    "eslint": "^8.32.0",
     "glob": "^8.0.3",
     "http-server": "^14.1.1",
     "rollup": "^3.10.0",

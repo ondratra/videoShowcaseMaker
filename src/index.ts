@@ -1,17 +1,17 @@
 export {
     executePlan,
     mergeAppliancesCallables,
-} from './flows';
+} from './flows'
 export type {
     DefaultsType,
     ReadonlyPluginsBase,
     IVideoPlan,
     IVideoPlanParameters,
-} from './flows';
+} from './flows'
 
 export type {
     IAsyncAction,
     IShowcaseMakerPlugin
-} from './tools/plugin';
+} from './tools/plugin'
 
 export * as corePlugins from './tools'

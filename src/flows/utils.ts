@@ -41,7 +41,7 @@ function getAppliancesActionsComposite<Appliances extends RecordAppliances>(appl
     return primitivesComposite
 }
 
-function getAppliancesActions<Appliances extends RecordAppliances>(appliances: Appliances, defaults: AppliancesDefaultsType<Appliances>) {
+function getAppliancesActions<Appliances extends RecordAppliances>(appliances: Appliances) {
     type ActionsTypeTmp = ActionsType<Appliances>
 
     const primitives = Object.keys(appliances)
@@ -63,7 +63,7 @@ function getAppliancesActions<Appliances extends RecordAppliances>(appliances: A
 
 export function mergeAppliancesCallables<Appliances extends RecordAppliances>(appliances: Appliances, defaults: AppliancesDefaultsType<Appliances>) {
     return {
-        primitives: getAppliancesActions(appliances, defaults),
+        primitives: getAppliancesActions(appliances),
         composites: getAppliancesActionsComposite(appliances, defaults),
     }
 }

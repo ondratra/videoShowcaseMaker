@@ -5,7 +5,7 @@
 // TODO: this has to be addressed somehow pragmatically to allow for example playing of subtitled audio
 //       and cursor click at same time
 
-import {IPluginAppliance, IPluginElements} from '../plugin'
+import {IPluginAppliance} from '../plugin'
 import {BlockingSound} from './BlockingSound'
 import {getActions} from './primitives'
 

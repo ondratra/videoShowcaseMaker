@@ -71,6 +71,7 @@ export function createCursorElements(): ICursorElements {
 
 export function setupClickEffect(clickEffectElement: HTMLElement, duration: number): () => Promise<void> {
     const transitionListener = (resolve: () => void, onEnd: () => Promise<void>) => async function myListener() {
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         clickEffectElement.removeEventListener('transitionend', myListener)
 
         clickEffectElement.style.transitionDuration = '0ms'
@@ -81,6 +82,7 @@ export function setupClickEffect(clickEffectElement: HTMLElement, duration: numb
     }
 
     const runCursorClickEffect = () => new Promise<void>(resolve => {
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         clickEffectElement.addEventListener('transitionend', transitionListener(resolve, async () => {}))
         clickEffectElement.style.transitionDuration = duration + 'ms'
         clickEffectElement.style.stroke = 'transparent'
@@ -104,13 +106,13 @@ export function setupHoverEffect(cursorElements: ICursorElements): () => void {
 
 
 function prepareVirtualStyles(cursorContainer: HTMLElement, hoverClass: string) {
-    const filter = (item: CSSStyleRule) => !!item.selectorText && !!item.selectorText.match(/\:hover/)
+    const filter = (item: CSSStyleRule) => !!item.selectorText && !!item.selectorText.match(/:hover/)
     const rules = getCssRules(filter)
 
     const rulesText = rules
         .map(item => item.cssText)
         .map(item => item.replace(':hover', '.' + hoverClass))
-        .join("\n")
+        .join('\n')
 
     const styleElement = document.createElement('style')
     styleElement.innerHTML = rulesText
@@ -148,7 +150,7 @@ function prepareHoverInterval(cursorElement: HTMLElement, interval: number, hove
     const hoverInterval = setInterval(() => {
         const cursorPosition = cursorElement.getBoundingClientRect()
 
-        const elementMouseIsOver = document.elementFromPoint(cursorPosition.x, cursorPosition.y);
+        const elementMouseIsOver = document.elementFromPoint(cursorPosition.x, cursorPosition.y)
 
         if (lastElement === elementMouseIsOver) {
             return
