@@ -6,11 +6,12 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c rollup.config.ts --configPlugin typescript",
-    "checks": "yarn checks:lint && yarn checks:format",
+    "checks": "yarn checks:lint",
     "checks:lint": "eslint \"src/**/*.ts*\"",
-    "checks:format": "prettier --check .",
+    "checks:lint:fix": "yarn checks:lint --fix",
     "examplesServer": "http-server -c-1",
-    "watch": "yarn build -w"
+    "watch": "yarn build -w",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.0.0",
@@ -22,6 +23,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "glob": "^8.0.3",
     "http-server": "^14.1.1",
+    "husky": "^8.0.0",
     "prettier": "^2.8.3",
     "rollup": "^3.10.0",
     "rollup-plugin-dts": "^5.1.1",
