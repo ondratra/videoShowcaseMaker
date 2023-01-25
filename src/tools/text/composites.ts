@@ -36,4 +36,19 @@ export const composites = (
      */
     writeIntoInput: (selector: IElementSelector, text: string | (() => string), strokeInterval?: number) =>
         writeIntoInput(selector, text, mbDefault(strokeInterval, defaults.strokeInterval)),
+
+    // TODO: here is an example situation when proper typings for pluginsLoaded is missing
+    //       atm nonexisting primitives/composites may be called here and it won't be discovered during compilation
+    // TODO: handle calling composites of other plugins - atm `pluginsLoaded` & `defaults`(!) needs to be provided
+    //       that means plugin's defaults need to contain defaults of all of its required plugins
+    /*
+    clickInputAndWriteIntoIt: (selector: IElementSelector, text: string | (() => string), strokeInterval?: number) => pluginsLoaded.core.primitives.asyncSequence([
+        pluginsLoaded.cursor.composites.moveCursorToElement(selector),
+        pluginsLoaded.core.primitives.delay(),
+        pluginsLoaded.cursor.primitives.clickElement(selector),
+        pluginsLoaded.core.primitives.delayBeforeWrite(),
+        pluginsLoaded.cursor.primitives.writeIntoInput(selector, text, strokeInterval),
+        pluginsLoaded.core.primitives.delay(),
+    ]),
+    */
 })
