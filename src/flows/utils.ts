@@ -4,35 +4,45 @@ import { FilterEmptyProperties, RecordValuesToUnion, UnionToIntersection } from 
 
 /////////////////// Aliases ////////////////////////////////////////////////////
 
+// type representing unknown composites' default types
 type UnknownDefaults = any
 
+// plugin types (with unknown composites' default types)
 export type PluginsBase = readonly IShowcaseMakerPlugin<UnknownDefaults>[]
 export type ReadonlyPluginsBase = Readonly<PluginsBase>
 
 /////////////////// mergeAppliancesCallables ///////////////////////////////////
 
+// shared composites and primitives util types
 type RecordAppliances = Record<string, IPluginAppliance<UnknownDefaults>>
 
+// composites util types
 type Composites<Appliances extends RecordAppliances> = { [Key in keyof Appliances]: Appliances[Key]['composites'] }
-type CompositeActionsTypeRecord<Appliances extends RecordAppliances> = {
+type CompositePrimitivesTypeRecord<Appliances extends RecordAppliances> = {
     [Key in keyof Composites<Appliances>]: ReturnType<Composites<Appliances>[Key]>
 }
-type CompositeActionsType<Appliances extends RecordAppliances> = SimpleFlatten<CompositeActionsTypeRecord<Appliances>>
+type CompositePrimitivesType<Appliances extends RecordAppliances> = SimpleFlatten<
+    CompositePrimitivesTypeRecord<Appliances>
+>
 
-type Actions<Appliances extends RecordAppliances> = { [Key in keyof Appliances]: Appliances[Key]['primitives'] }
-type ActionsTypeRecord<Appliances extends RecordAppliances> = {
-    [Key in keyof Actions<Appliances>]: Actions<Appliances>[Key]
+// primitives util types
+type Primitives<Appliances extends RecordAppliances> = { [Key in keyof Appliances]: Appliances[Key]['primitives'] }
+type PrimitivesTypeRecord<Appliances extends RecordAppliances> = {
+    [Key in keyof Primitives<Appliances>]: Primitives<Appliances>[Key]
 }
-type ActionsType<Appliances extends RecordAppliances> = SimpleFlatten<ActionsTypeRecord<Appliances>>
+type PrimitivesType<Appliances extends RecordAppliances> = SimpleFlatten<PrimitivesTypeRecord<Appliances>>
 
-function getAppliancesActionsComposite<Appliances extends RecordAppliances>(
+/**
+ * Extracts all composites from given appliances.
+ */
+function getAppliancesPrimitivesComposite<Appliances extends RecordAppliances>(
     appliances: Appliances,
     defaults: AppliancesDefaultsType<Appliances>,
 ) {
-    type CompositeActionsTypeTmp = CompositeActionsType<Appliances>
+    type CompositePrimitivesTypeTmp = CompositePrimitivesType<Appliances>
 
-    const primitivesComposite = Object.keys(appliances).reduce<[CompositeActionsTypeTmp, any]>(
-        (acc: [CompositeActionsTypeTmp, any], item) => {
+    const primitivesComposite = Object.keys(appliances).reduce<[CompositePrimitivesTypeTmp, any]>(
+        (acc: [CompositePrimitivesTypeTmp, any], item) => {
             const applianceName = item as keyof Appliances
 
             const [composites, pluginsLoaded] = acc
@@ -44,17 +54,20 @@ function getAppliancesActionsComposite<Appliances extends RecordAppliances>(
                 { ...pluginsLoaded, [applianceName]: appliances[applianceName] },
             ]
         },
-        [{}, {}] as [CompositeActionsTypeTmp, any],
+        [{}, {}] as [CompositePrimitivesTypeTmp, any],
     )[0]
 
     return primitivesComposite
 }
 
-function getAppliancesActions<Appliances extends RecordAppliances>(appliances: Appliances) {
-    type ActionsTypeTmp = ActionsType<Appliances>
+/**
+ * Extracts all primitives from given appliances.
+ */
+function getAppliancesPrimitives<Appliances extends RecordAppliances>(appliances: Appliances) {
+    type PrimitivesTypeTmp = PrimitivesType<Appliances>
 
-    const primitives = Object.keys(appliances).reduce<[ActionsTypeTmp, any]>(
-        (acc: [ActionsTypeTmp, any], item) => {
+    const primitives = Object.keys(appliances).reduce<[PrimitivesTypeTmp, any]>(
+        (acc: [PrimitivesTypeTmp, any], item) => {
             const applianceName = item as keyof Appliances
 
             const [composites, pluginsLoaded] = acc
@@ -66,19 +79,22 @@ function getAppliancesActions<Appliances extends RecordAppliances>(appliances: A
                 { ...pluginsLoaded, [applianceName]: appliances[applianceName] },
             ]
         },
-        [{}, {}] as [ActionsTypeTmp, any],
+        [{}, {}] as [PrimitivesTypeTmp, any],
     )[0]
 
     return primitives
 }
 
+/**
+ * Merges primitives and composites of given appliances for easy access.
+ */
 export function mergeAppliancesCallables<Appliances extends RecordAppliances>(
     appliances: Appliances,
     defaults: AppliancesDefaultsType<Appliances>,
 ) {
     return {
-        primitives: getAppliancesActions(appliances),
-        composites: getAppliancesActionsComposite(appliances, defaults),
+        primitives: getAppliancesPrimitives(appliances),
+        composites: getAppliancesPrimitivesComposite(appliances, defaults),
     }
 }
 
@@ -86,16 +102,25 @@ export function mergeAppliancesCallables<Appliances extends RecordAppliances>(
 
 type MyApplianceType<PluginType extends IShowcaseMakerPlugin<UnknownDefaults>> = Awaited<ReturnType<PluginType>>
 
+/**
+ * Extract of sorted appliances of given plugins.
+ */
 export type OrderedAppliances<T extends ReadonlyPluginsBase> = { [Key in keyof T]: MyApplianceType<T[Key]> } & {
     name: string
 }[]
 
+/**
+ * Extract of indexed appliances of given plugins.
+ */
+export type AppliancesType<Plugins extends ReadonlyPluginsBase> = ArrayToRecord<OrderedAppliances<Plugins>, 'name'>
+
+/**
+ * Extract of both sorted and indexed appliances from plugins.
+ */
 export type MySetupPluginsResult<T extends ReadonlyPluginsBase> = {
     appliancesOrdered: OrderedAppliances<T>
-    appliances: ArrayToRecord<OrderedAppliances<T>, 'name'>
+    appliances: AppliancesType<T>
 }
-
-export type AppliancesType<Plugins extends ReadonlyPluginsBase> = ArrayToRecord<OrderedAppliances<Plugins>, 'name'>
 
 type ExtractComposites<T extends AppliancesType<PluginsBase>> = {
     [K in keyof T]: Parameters<T[K]['composites']>
@@ -104,8 +129,14 @@ type ExtractArrayNthElements<T extends Record<string, unknown[]>, N extends numb
     [K in keyof T]: T[K][N]
 }
 
+/**
+ * Extract of respective composites' default parameters for all given appliances.
+ */
 export type AppliancesDefaultsType<T extends AppliancesType<PluginsBase>> = UnionToIntersection<
     RecordValuesToUnion<ExtractArrayNthElements<FilterEmptyProperties<ExtractComposites<T>, []>, 1>>
 >
 
+/**
+ * Extract of respective composites' default parameters for all given plugins.
+ */
 export type DefaultsType<T extends PluginsBase> = AppliancesDefaultsType<AppliancesType<T>>

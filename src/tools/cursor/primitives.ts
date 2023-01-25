@@ -1,10 +1,16 @@
 import { findElement, IElementSelector } from '../utils'
 
+/**
+ * Cursor's 2D coordinance.
+ */
 export interface ITargetPosition {
     x: number
     y: number
 }
 
+/**
+ * Moves virtual cursor to target position.
+ */
 export const moveCursorTo =
     (movingElement: HTMLElement, targetPosition: ITargetPosition, duration: number) => (): Promise<void> => {
         const resultPromise =
@@ -20,6 +26,9 @@ export const moveCursorTo =
         return resultPromise
     }
 
+/**
+ * Moves virtual cursor to target element's position.
+ */
 export const moveCursorToElement =
     (movingElement: HTMLElement, targetSelector: IElementSelector, duration: number) => (): Promise<void> => {
         const position = getTargetPosition(targetSelector)
@@ -31,6 +40,9 @@ export const moveCursorToElement =
         return moveCursorTo(movingElement, centerPosition, duration)()
     }
 
+/**
+ * Returns position of the requested element.
+ */
 function getTargetPosition(targetSelector: IElementSelector): DOMRect {
     const targetElement = findElement(targetSelector) as HTMLElement
     const offset = targetElement.getBoundingClientRect()

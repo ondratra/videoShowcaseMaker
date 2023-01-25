@@ -1,6 +1,9 @@
+/**
+ * Creates overlay for a plugin that can insert it's HTML content into it. It will cover the whole screen.
+ */
 export function createOverlay(name: string, content?: string, styles?: string): HTMLElement {
     const overlayElement = document.createElement('div')
-    overlayElement.id = 'videoOverlay_' + name
+    overlayElement.id = 'showcaseOverlay_' + name
     overlayElement.style.position = 'fixed'
     overlayElement.style.zIndex = '9999'
     overlayElement.style.width = '100%'
@@ -14,8 +17,14 @@ export function createOverlay(name: string, content?: string, styles?: string): 
     return overlayElement
 }
 
+/**
+ * Type for CSS selector or combination of CSS selector and index of the element of interest among found elements.
+ */
 export type IElementSelector = string | [number, string]
 
+/**
+ * Finds selected element in the document.
+ */
 export function findElement(selector: IElementSelector): HTMLElement {
     if (!Array.isArray(selector)) {
         const result = document.querySelector(selector) as HTMLElement
@@ -28,5 +37,8 @@ export function findElement(selector: IElementSelector): HTMLElement {
     return result
 }
 
+/**
+ * Returns the given value or a default value if no value is given.
+ */
 export const mbDefault = <T>(value: T | undefined, defaultValue: T): T =>
     typeof value == 'undefined' ? defaultValue : value

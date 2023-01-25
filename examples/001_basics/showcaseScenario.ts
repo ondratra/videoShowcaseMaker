@@ -2,15 +2,17 @@ import {
     corePlugins,
     DefaultsType,
     IAsyncAction,
-    IVideoPlanParameters,
+    IShowcasePlanParameters,
     mergeAppliancesCallables,
     ReadonlyPluginsBase,
 } from '../../src'
 
+// declare all CSS selectors that will be used by showcase plan
 export const selectors = {
     exampleButton1: '#exampleButton1',
 }
 
+// declare all plugins that will be used by showcase plan
 export function getPlugins() {
     const plugins = [
         corePlugins.core.setupPlugin(),
@@ -21,20 +23,23 @@ export function getPlugins() {
     return plugins
 }
 
+// infer TS type for declared plugins
 type PluginsType = ReturnType<typeof getPlugins>
 
-// TODO: rename videoPlan to showcasePlan
-export function videoPlan(actionSettings: IVideoPlanParameters<PluginsType>): IAsyncAction {
+/**
+ * Showcase plan that demonstrates basic features. Core, Audio, and Cursor plugins are presented.
+ */
+export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>): IAsyncAction {
     const defaults: DefaultsType<PluginsType> = {
         duration: 1000,
         delayAfterClickEffect: 300,
         clickSoundUrl: '../assets/click.ogg',
     }
 
-    const { primitives, composites } = mergeAppliancesCallables(actionSettings.appliances, defaults)
+    const { primitives, composites } = mergeAppliancesCallables(planSettings.appliances, defaults)
 
     // composites overwrite primitives of the same name
-    // use `actionSettings.appliances.myPlugin.primitives.myAction`
+    // use `planSettings.appliances.myPlugin.primitives.myAction`
     // to get access to overwritten primitives (or composites)
     const actions = { ...primitives, ...composites }
 

@@ -35,7 +35,7 @@ module.exports = {
     '@typescript-eslint/no-empty-function': 'off',
 
     // prevent unused stuff & possible error-causing constructs
-    '@typescript-eslint/no-unused-vars': 'error',
+    '@typescript-eslint/no-unused-vars': ['error', { "argsIgnorePattern": "^_" }],
     '@typescript-eslint/no-misused-promises': 'error',
 
     // import/export sorting

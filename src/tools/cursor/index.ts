@@ -1,21 +1,30 @@
 import { IPluginAppliance } from '../plugin'
-import { composites, IDefaults } from './composites'
-import * as rawActions from './primitives'
+import { composites, ICursorPluginDefaults } from './composites'
+import * as rawPrimitives from './primitives'
 import * as setup from './setup'
 
+/**
+ * Configuration for Cursor plugin.
+ */
 export interface IConfiguration {
     clickEffectDuration: number
 }
 
+/**
+ * Cursor plugin creates virtual cursor that can be moved around the screen and click on things.
+ */
 export const setupPlugin = (configuration: IConfiguration) => async () => {
+    // pripare elements and primitives
     const elements = setup.createCursorElements()
     const primitives = {
         runClickEffect: () => setup.setupClickEffect(elements.clickEffectElement, configuration.clickEffectDuration),
-        ...rawActions,
+        ...rawPrimitives,
     }
 
+    // setup virtual onHover effect
     const clearHoverInterval = setup.setupHoverEffect(elements)
 
+    // plugin definition
     return {
         name: 'cursor' as const,
         requiredPlugins: ['core', 'audio'],
@@ -25,5 +34,5 @@ export const setupPlugin = (configuration: IConfiguration) => async () => {
         destroy: async () => {
             clearHoverInterval()
         },
-    } as const satisfies IPluginAppliance<IDefaults>
+    } as const satisfies IPluginAppliance<ICursorPluginDefaults>
 }

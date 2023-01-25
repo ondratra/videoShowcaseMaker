@@ -44,12 +44,11 @@
     <!-- load app js -->
     <script type="module">
         import { executePlan } from '../../dist/index.js';
-        import { getPlugins, videoPlan } from '../../dist/examples/001_basics/showcaseScenario.js';
+        import { getPlugins, showcasePlan } from '../../dist/examples/001_basics/showcaseScenario.js';
 
         // init start button
         document.querySelector('#startButton').addEventListener('click', async () => {
-            //await executePlan(videoPlan)
-            await executePlan(videoPlan, getPlugins())
+            await executePlan(showcasePlan, getPlugins())
         })
     </script>
 </body>

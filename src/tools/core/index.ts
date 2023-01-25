@@ -1,7 +1,10 @@
 import { IPluginAppliance } from '../plugin'
-import { composites, IDefaultsa } from './composites'
+import { composites, ICorePluginDefaults } from './composites'
 import * as primitives from './primitives'
 
+/**
+ * Core plugin exposes utilities that are either essential for other plugins or common in a showcase plan building.
+ */
 export const setupPlugin = () => async () => {
     return {
         name: 'core',
@@ -10,5 +13,5 @@ export const setupPlugin = () => async () => {
         primitives,
         composites,
         destroy: async () => {},
-    } as const satisfies IPluginAppliance<IDefaultsa>
+    } as const satisfies IPluginAppliance<ICorePluginDefaults>
 }

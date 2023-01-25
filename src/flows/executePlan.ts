@@ -4,16 +4,25 @@ import { ArrayToRecord } from '../tools/typeUtils'
 import { createOverlay } from '../tools/utils'
 import { AppliancesType, MySetupPluginsResult, OrderedAppliances, PluginsBase, ReadonlyPluginsBase } from './utils'
 
-export interface IVideoPlanParameters<Plugins extends PluginsBase> {
+/**
+ * Showcase plan parameters.
+ */
+export interface IShowcasePlanParameters<Plugins extends PluginsBase> {
     appliances: AppliancesType<Plugins>
 }
 
-export interface IVideoPlan<Plugins extends PluginsBase> {
-    (primitiveSettings: IVideoPlanParameters<Plugins>): IAsyncAction
+/**
+ * Showcase plan.
+ */
+export interface IShowcasePlan<Plugins extends PluginsBase> {
+    (planSettings: IShowcasePlanParameters<Plugins>): IAsyncAction
 }
 
+/**
+ * Executes showcase plan.
+ */
 export async function executePlan<Plugins extends PluginsBase>(
-    videoPlan: IVideoPlan<Plugins>,
+    showcasePlan: IShowcasePlan<Plugins>,
     plugins: Plugins,
 ): Promise<void> {
     // setup plugins
@@ -21,26 +30,26 @@ export async function executePlan<Plugins extends PluginsBase>(
 
     // append overlays to document
     const documentBody = document.querySelector('body') as HTMLBodyElement
-    const videoContainer = createOverlay('videoContainer')
+    const showcaseContainer = createOverlay('showcaseContainer')
 
     const overlays = appliancesOrdered
         .map((item) => item.elements.overlayElement)
         .filter((item) => item) as HTMLElement[]
-    overlays.forEach((item) => videoContainer.appendChild(item))
-    documentBody.appendChild(videoContainer)
+    overlays.forEach((item) => showcaseContainer.appendChild(item))
+    documentBody.appendChild(showcaseContainer)
 
-    // setTimeout needed to workaround some video start issues
+    // setTimeout needed to workaround some showcase start issues
     const resultPromise = new Promise<void>((resolve) => {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         setTimeout(async () => {
             // execute plan
-            await videoPlan({ appliances })()
+            await showcasePlan({ appliances })()
 
             // clean everything plugins need
             asyncSequence(appliancesOrdered.map((item) => item.destroy))
 
             // clean container
-            videoContainer.remove()
+            showcaseContainer.remove()
 
             // finish
             resolve()
@@ -50,6 +59,9 @@ export async function executePlan<Plugins extends PluginsBase>(
     await resultPromise
 }
 
+/**
+ * Sequentially setups all plugins.
+ */
 async function setupPlugins<Plugins extends ReadonlyPluginsBase>(
     pluginsToSetup: Plugins,
 ): Promise<MySetupPluginsResult<Plugins>> {
@@ -71,11 +83,13 @@ async function setupPlugins<Plugins extends ReadonlyPluginsBase>(
         )
     }
 
+    // setup plugins and collect their appliances
     const appliancesOrdered = await Object.keys(pluginsToSetup).reduce(async (accPromise, key) => {
         const acc = await accPromise
         const plugin = pluginsToSetup[parseInt(key)]
         const appliance = await plugin()
 
+        // ensure all required plugins are loaded
         const missingRequiredPlugins = detectMissingRequiredPlugins(acc, appliance.requiredPlugins)
         if (missingRequiredPlugins.length) {
             const tmpLoadedMsg = acc.map((item) => item.name).join(', ')
@@ -90,6 +104,7 @@ async function setupPlugins<Plugins extends ReadonlyPluginsBase>(
         return acc
     }, Promise.resolve([]) as Promise<OrderedAppliances<Plugins>>)
 
+    // index appliances by their names
     const appliances = appliancesOrdered.reduce((acc, item) => {
         ;(acc as Record<string, typeof item>)[item.name] = item // this underwhelming typecast is needed to fulfill type guards
 
