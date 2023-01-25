@@ -18,12 +18,10 @@ type RecordAppliances = Record<string, IPluginAppliance<UnknownDefaults>>
 
 // composites util types
 type Composites<Appliances extends RecordAppliances> = { [Key in keyof Appliances]: Appliances[Key]['composites'] }
-type CompositePrimitivesTypeRecord<Appliances extends RecordAppliances> = {
+type CompositesTypeRecord<Appliances extends RecordAppliances> = {
     [Key in keyof Composites<Appliances>]: ReturnType<Composites<Appliances>[Key]>
 }
-type CompositePrimitivesType<Appliances extends RecordAppliances> = SimpleFlatten<
-    CompositePrimitivesTypeRecord<Appliances>
->
+type CompositesType<Appliances extends RecordAppliances> = SimpleFlatten<CompositesTypeRecord<Appliances>>
 
 // primitives util types
 type Primitives<Appliances extends RecordAppliances> = { [Key in keyof Appliances]: Appliances[Key]['primitives'] }
@@ -39,7 +37,7 @@ function getAppliancesPrimitivesComposite<Appliances extends RecordAppliances>(
     appliances: Appliances,
     defaults: AppliancesDefaultsType<Appliances>,
 ) {
-    type CompositePrimitivesTypeTmp = CompositePrimitivesType<Appliances>
+    type CompositePrimitivesTypeTmp = CompositesType<Appliances>
 
     const primitivesComposite = Object.keys(appliances).reduce<[CompositePrimitivesTypeTmp, any]>(
         (acc: [CompositePrimitivesTypeTmp, any], item) => {
