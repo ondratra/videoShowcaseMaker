@@ -4,6 +4,14 @@ import * as rawPrimitives from './primitives'
 import * as setup from './setup'
 
 /**
+ * Recommended/example values for default values for Cursor plugin.
+ */
+export const recommendedDefaults: Omit<ICursorPluginDefaults, 'clickSoundUrl'> = {
+    duration: 1000,
+    delayAfterClickEffect: 300,
+} satisfies Partial<ICursorPluginDefaults>
+
+/**
  * Configuration for Cursor plugin.
  */
 export interface IConfiguration {

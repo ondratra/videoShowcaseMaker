@@ -46,7 +46,7 @@ export async function executePlan<Plugins extends PluginsBase>(
             await showcasePlan({ appliances })()
 
             // clean everything plugins need
-            asyncSequence(appliancesOrdered.map((item) => item.destroy))
+            await asyncSequence(appliancesOrdered.map((item) => item.destroy))()
 
             // clean container
             showcaseContainer.remove()

@@ -9,15 +9,19 @@ import {
 
 // declare all CSS selectors that will be used by showcase plan
 export const selectors = {
-    exampleButton1: '#exampleButton1',
+    loremIpsumContainer: '.loremIpsumContainer',
 }
 
 // declare all plugins that will be used by showcase plan
 export function getPlugins() {
     const plugins = [
         corePlugins.core.setupPlugin(),
+
+        // TODO: try to remove these after optional dependencies are supported
         corePlugins.audio.setupPlugin(),
         corePlugins.cursor.setupPlugin({ clickEffectDuration: 4000 }),
+
+        corePlugins.text.setupPlugin(),
     ] as const satisfies ReadonlyPluginsBase
 
     return plugins
@@ -35,6 +39,7 @@ export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>)
         ...corePlugins.audio.recommendedDefaults,
         ...corePlugins.cursor.recommendedDefaults,
         clickSoundUrl: '../assets/click.ogg',
+        ...corePlugins.text.recommendedDefaults,
     }
 
     const { primitives, composites } = mergeAppliancesCallables(planSettings.appliances, defaults)
@@ -45,12 +50,8 @@ export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>)
     const actions = { ...primitives, ...composites }
 
     return actions.asyncSequence([
-        // click example button
-        actions.moveCursorToElement(selectors.exampleButton1),
-        actions.clickElement(selectors.exampleButton1),
+        // select text
+        actions.selectElementText(selectors.loremIpsumContainer, 6, 20),
         actions.delay(),
-
-        // ultimate test of typeguards
-        //actions.shouldThrowError(), // this should trigger compile-time error
     ])
 }

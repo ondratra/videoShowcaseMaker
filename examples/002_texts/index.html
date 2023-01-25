@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <script src="../assets/fontAwesome/fontawesome.min.js" /></script>
+    <script src="../assets/fontAwesome/solid.min.js" /></script>
+    <link rel="stylesheet"  href="../assets/fontAwesome/svg-with-js.min.css" />
+
+</head>
+<body>
+    <h1>Example 002 - Texts</h1>
+
+    <div>
+        <input
+            id="startButton"
+            type="button"
+            value="Click here to start"
+            style="background-color: lawngreen;"
+        />
+    </div>
+
+    <hr />
+
+    <div>
+        <div class="loremIpsumContainer">
+            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nulla accumsan, elit sit amet varius semper,
+            nulla mauris mollis quam, tempor suscipit diam nulla vel leo. Pellentesque ipsum. Fusce wisi.
+            Sed elit dui, pellentesque a, faucibus vel, interdum nec, diam. Lorem ipsum dolor sit amet, consectetuer
+            adipiscing elit. In dapibus augue non sapien. Aliquam id dolor. Aenean vel massa quis mauris vehicula
+            lacinia. Suspendisse sagittis ultrices augue. Fusce aliquam vestibulum ipsum. Etiam dictum tincidunt diam.
+            In enim a arcu imperdiet malesuada.
+        </div>
+    </div>
+
+    <!-- load app js -->
+    <script type="module">
+        import { executePlan } from '../../dist/index.js';
+        import { getPlugins, showcasePlan } from '../../dist/examples/002_texts/showcaseScenario.js';
+
+        // init start button
+        document.querySelector('#startButton').addEventListener('click', async () => {
+            await executePlan(showcasePlan, getPlugins())
+        })
+    </script>
+</body>
+</html>

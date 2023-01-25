@@ -12,6 +12,11 @@ import { composites, IAudioPluginDefaults } from './composites'
 import { primitives } from './primitives'
 
 /**
+ * Recommended/example values for default values for Core plugin.
+ */
+export const recommendedDefaults: IAudioPluginDefaults = {}
+
+/**
  * Audio plugin creates an HTML audio player and exposes basic manipulation actions for it.
  */
 export const setupPlugin = () => async () => {
