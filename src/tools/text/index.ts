@@ -16,7 +16,7 @@ export const setupPlugin = () => async () => {
     // plugin definition
     return {
         name: 'text' as const,
-        requiredPlugins: ['cursor'],
+        requiredPlugins: ['core', 'cursor'],
         elements: {},
         primitives,
         composites,

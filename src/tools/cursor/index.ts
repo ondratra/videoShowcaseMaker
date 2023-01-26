@@ -12,6 +12,13 @@ export const recommendedDefaults: Omit<ICursorPluginDefaults, 'clickSoundUrl'> =
 } satisfies Partial<ICursorPluginDefaults>
 
 /**
+ * Recommended/example configuration for Cursor plugin.
+ */
+export const recommendedConfiguration: IConfiguration = {
+    clickEffectDuration: 4000,
+}
+
+/**
  * Configuration for Cursor plugin.
  */
 export interface IConfiguration {

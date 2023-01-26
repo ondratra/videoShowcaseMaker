@@ -4,16 +4,29 @@ import { IStagingElements } from './setup'
 /**
  * Default values for Staging plugin composites.
  */
-export interface IStagingPluginDefaults {}
+export interface IStagingPluginDefaults {
+    delayClapboard: number
+}
 
 /**
  * Staging plugin's composites.
  */
 export const composites =
     (elements: IStagingElements, _primitives: Record<string, never>) =>
-    (_pluginsLoaded: Record<string, IPluginAppliance<unknown>>, _defaults: IStagingPluginDefaults) => {
+    (pluginsLoaded: Record<string, IPluginAppliance<unknown>>, defaults: IStagingPluginDefaults) => {
+        // clapboard operations
+        const showClapboard = async (): Promise<void> => {
+            elements.clapboardOverlay.style.visibility = 'visible'
+        }
+        const hideClapboard = async (): Promise<void> => {
+            elements.clapboardOverlay.style.visibility = 'hidden'
+        }
+
         return {
-            showCurtain: (): Promise<void> => {
+            /**
+             * Show the screen covering curtain.
+             */
+            showCurtain: () => (): Promise<void> => {
                 const animationPromise = new Promise<void>((resolve) => {
                     elements.curtainOverlay.addEventListener('transitionend', () => resolve(), { once: true })
                     elements.curtainOverlay.style.opacity = '1'
@@ -22,21 +35,26 @@ export const composites =
                 return animationPromise
             },
 
-            hideCurtain: (): Promise<void> => {
+            /**
+             * Hide the screen covering curtain.
+             */
+            hideCurtain: () => (): Promise<void> => {
                 const animationPromise = new Promise<void>((resolve) => {
-                    elements.overlayElement.addEventListener('transitionend', () => resolve(), { once: true })
-                    elements.overlayElement.style.opacity = '0'
+                    elements.curtainOverlay.addEventListener('transitionend', () => resolve(), { once: true })
+                    elements.curtainOverlay.style.opacity = '0'
                 })
 
                 return animationPromise
             },
 
-            showClipboard: async (): Promise<void> => {
-                elements.clapboardOverlay.style.visibility = 'visible'
-            },
-
-            hideClipboard: async (): Promise<void> => {
-                elements.clapboardOverlay.style.visibility = 'hidden'
-            },
+            /**
+             * Clap with the scren covering clapboard.
+             */
+            clapboard: () =>
+                pluginsLoaded.core.primitives.asyncSequence([
+                    () => showClapboard(),
+                    pluginsLoaded.core.primitives.delay(defaults.delayClapboard),
+                    () => hideClapboard(),
+                ]),
         }
     }

@@ -7,13 +7,13 @@ export interface IStagingElements extends IPluginElements {
     clapboardOverlay: HTMLElement
 }
 
-// TODO: handle properly as parameter
-const curtainFadeDuration = 2000
-
-export function createStagingElements(): IStagingElements {
+/**
+ * Creates elements used by Staging plugin.
+ */
+export function createStagingElements(curtainFadeDuration: number): IStagingElements {
     const overlayElement = createOverlay('staging')
 
-    const curtainOverlay = createCurtainOverlay()
+    const curtainOverlay = createCurtainOverlay(curtainFadeDuration)
     const clapboardOverlay = createClapboardOverlay()
 
     overlayElement.appendChild(curtainOverlay)
@@ -26,7 +26,10 @@ export function createStagingElements(): IStagingElements {
     }
 }
 
-function createCurtainOverlay(): HTMLElement {
+/**
+ * Creates overlay for curtain.
+ */
+function createCurtainOverlay(curtainFadeDuration: number): HTMLElement {
     const overlayElement = createOverlay('curtain')
 
     overlayElement.style.transitionDuration = curtainFadeDuration + 'ms'
@@ -36,6 +39,9 @@ function createCurtainOverlay(): HTMLElement {
     return overlayElement
 }
 
+/**
+ * Creates overlay for clapboard.
+ */
 function createClapboardOverlay(): HTMLElement {
     const overlayElement = createOverlay('clapboard')
 

@@ -5,19 +5,20 @@ import {
     IShowcasePlanParameters,
     mergeAppliancesCallables,
     ReadonlyPluginsBase,
+    utils,
 } from '../../src'
 
 // declare all CSS selectors that will be used by showcase plan
 export const selectors = {
-    exampleButton1: '#exampleButton1',
+    loremIpsumContainer1: '.loremIpsumContainer1',
+    loremIpsumContainer2: '.loremIpsumContainer2',
 }
 
 // declare all plugins that will be used by showcase plan
 export function getPlugins() {
     const plugins = [
         corePlugins.core.setupPlugin(),
-        corePlugins.audio.setupPlugin(),
-        corePlugins.cursor.setupPlugin(corePlugins.cursor.recommendedConfiguration),
+        corePlugins.staging.setupPlugin(corePlugins.staging.recommendedConfiguration),
     ] as const satisfies ReadonlyPluginsBase
 
     return plugins
@@ -32,9 +33,7 @@ type PluginsType = ReturnType<typeof getPlugins>
 export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>): IAsyncAction {
     const defaults: DefaultsType<PluginsType> = {
         ...corePlugins.core.recommendedDefaults,
-        ...corePlugins.audio.recommendedDefaults,
-        ...corePlugins.cursor.recommendedDefaults,
-        clickSoundUrl: '../assets/click.ogg',
+        ...corePlugins.staging.recommendedDefaults,
     }
 
     const { primitives, composites } = mergeAppliancesCallables(planSettings.appliances, defaults)
@@ -45,12 +44,32 @@ export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>)
     const actions = { ...primitives, ...composites }
 
     return actions.asyncSequence([
-        // click example button
-        actions.moveCursorToElement(selectors.exampleButton1),
-        actions.clickElement(selectors.exampleButton1),
+        // starting clapboard
+        actions.clapboard(),
         actions.delay(),
 
-        // ultimate test of typeguards
-        //actions.shouldThrowError(), // this should trigger compile-time error
+        // fadein curtain
+        actions.showCurtain(),
+
+        // do everything needed behind scenes
+        async () => {
+            utils.findElement(selectors.loremIpsumContainer1).style.visibility = 'hidden'
+            utils.findElement(selectors.loremIpsumContainer2).style.visibility = 'visible'
+        },
+        actions.delay(),
+
+        // fadeout curtain
+        actions.hideCurtain(),
+        actions.delay(),
+
+        // ending clapboard
+        actions.clapboard(),
+        actions.delay(),
+
+        // reset state - this is only needed when running this example multiple times
+        async () => {
+            utils.findElement(selectors.loremIpsumContainer1).style.visibility = 'visible'
+            utils.findElement(selectors.loremIpsumContainer2).style.visibility = 'hidden'
+        },
     ])
 }

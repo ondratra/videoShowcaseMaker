@@ -12,7 +12,7 @@ export interface ICursorElements extends IPluginElements {
 }
 
 /**
- * Creates elements used by cursor plugin.
+ * Creates elements used by Cursor plugin.
  */
 export function createCursorElements(): ICursorElements {
     const cursorContainer = document.createElement('div')

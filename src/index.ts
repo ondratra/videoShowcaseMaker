@@ -2,3 +2,4 @@ export type { DefaultsType, IShowcasePlan, IShowcasePlanParameters, ReadonlyPlug
 export { executePlan, mergeAppliancesCallables } from './flows'
 export * as corePlugins from './tools'
 export type { IAsyncAction, IShowcaseMakerPlugin } from './tools/plugin'
+export * as utils from './tools/utils'

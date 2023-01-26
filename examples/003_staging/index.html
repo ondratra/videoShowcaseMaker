@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <script src="../assets/fontAwesome/fontawesome.min.js" /></script>
+    <script src="../assets/fontAwesome/solid.min.js" /></script>
+    <link rel="stylesheet"  href="../assets/fontAwesome/svg-with-js.min.css" />
+
+    <style>
+        .loremIpsumContainer1 {
+            color: crimson;
+        }
+
+        .loremIpsumContainer2 {
+            color: teal;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <h1>Example 003 - Staging</h1>
+
+    <div>
+        <input
+            id="startButton"
+            type="button"
+            value="Click here to start"
+            style="background-color: lawngreen;"
+        />
+    </div>
+
+    <hr />
+
+    <div>
+        <p class="loremIpsumContainer1">
+            Donec vitae arcu. Nullam sapien sem, ornare ac, nonummy non, lobortis a enim. Aliquam erat volutpat.
+            Curabitur vitae diam non enim vestibulum interdum. In rutrum. Maecenas aliquet accumsan leo. Maecenas
+            ipsum velit, consectetuer eu lobortis ut, dictum at dui. Nulla turpis magna, cursus sit amet, suscipit a,
+            interdum id, felis. Nulla non lectus sed nisl molestie malesuada. Morbi scelerisque luctus velit.
+            Curabitur bibendum justo non orci. Et harum quidem rerum facilis est et expedita distinctio. Ut enim ad
+            minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        </p>
+
+        <p class="loremIpsumContainer2">
+            Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates
+            repudiandae sint et molestiae non recusandae. Morbi scelerisque luctus velit. Nullam sapien sem, ornare ac,
+            nonummy non, lobortis a enim. Nulla non lectus sed nisl molestie malesuada. Quisque porta. Vivamus
+            porttitor turpis ac leo. Maecenas libero. Morbi scelerisque luctus velit. Morbi leo mi, nonummy eget
+            tristique non, rhoncus non leo. Duis ante orci, molestie vitae vehicula venenatis, tincidunt ac pede. Duis
+            sapien nunc, commodo et, interdum suscipit, sollicitudin et, dolor.
+        </p>
+    </div>
+
+    <!-- load app js -->
+    <script type="module">
+        import { executePlan } from '../../dist/index.js';
+        import { getPlugins, showcasePlan } from '../../dist/examples/003_staging/showcaseScenario.js';
+
+        // init start button
+        document.querySelector('#startButton').addEventListener('click', async () => {
+            await executePlan(showcasePlan, getPlugins())
+        })
+    </script>
+</body>
+</html>
