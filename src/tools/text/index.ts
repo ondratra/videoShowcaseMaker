@@ -3,7 +3,7 @@ import { composites, ITextPluginDefaults } from './composites'
 import * as primitives from './primitives'
 
 /**
- * Recommended/example values for default values for Core plugin.
+ * Recommended/example values for default values for Text plugin.
  */
 export const recommendedDefaults: ITextPluginDefaults = {
     strokeInterval: 30,
