@@ -9,6 +9,7 @@ import { AppliancesType, MySetupPluginsResult, OrderedAppliances, PluginsBase, R
  */
 export interface IShowcasePlanParameters<Plugins extends PluginsBase> {
     appliances: AppliancesType<Plugins>
+    appliancesOrdered: OrderedAppliances<Plugins>
 }
 
 /**
@@ -43,7 +44,7 @@ export async function executePlan<Plugins extends PluginsBase>(
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         setTimeout(async () => {
             // execute plan
-            await showcasePlan({ appliances })()
+            await showcasePlan({ appliancesOrdered, appliances })()
 
             // clean everything plugins need
             await asyncSequence(appliancesOrdered.map((item) => item.destroy))()
@@ -72,6 +73,12 @@ async function setupPlugins<Plugins extends ReadonlyPluginsBase>(
     //       such typeguard will need more research and will likely take
     //       quite time to implement - working with tuple types is still
     //       not ideal in typescript
+    //
+    //       this likely can't be done before this issue is fixed
+    //       https://github.com/microsoft/TypeScript/issues/27995
+    //
+    // EDIT: it is likely achievalble since similar feature was needed for enhancements to work
+    //       but let's leave the implemntation for another time
     function detectMissingRequiredPlugins(
         loadedPlugins: OrderedAppliances<Plugins>,
         requiredPlugins: readonly string[],
@@ -102,7 +109,8 @@ async function setupPlugins<Plugins extends ReadonlyPluginsBase>(
         acc.push(appliance)
 
         return acc
-    }, Promise.resolve([]) as Promise<OrderedAppliances<Plugins>>)
+        // due to some strange TS behaviour a ridiculous `& unknown[]` additions needs to be here for everything to work
+    }, Promise.resolve([]) as Promise<OrderedAppliances<Plugins> & unknown[]>)
 
     // index appliances by their names
     const appliances = appliancesOrdered.reduce((acc, item) => {

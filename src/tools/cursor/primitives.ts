@@ -1,4 +1,5 @@
 import { findElement, IElementSelector } from '../utils'
+import { IConfiguration, ICursorElements, setupClickEffect } from './setup'
 
 /**
  * Cursor's 2D coordinance.
@@ -8,10 +9,18 @@ export interface ITargetPosition {
     y: number
 }
 
+export const primitives = (elements: ICursorElements, configuration: IConfiguration) => {
+    return {
+        runClickEffect: () => setupClickEffect(elements.clickEffectElement, configuration.clickEffectDuration),
+        moveCursorTo,
+        moveCursorToElement,
+    }
+}
+
 /**
  * Moves virtual cursor to target position.
  */
-export const moveCursorTo =
+const moveCursorTo =
     (movingElement: HTMLElement, targetPosition: ITargetPosition, duration: number) => (): Promise<void> => {
         const resultPromise =
             duration > 0
@@ -29,7 +38,7 @@ export const moveCursorTo =
 /**
  * Moves virtual cursor to target element's position.
  */
-export const moveCursorToElement =
+const moveCursorToElement =
     (movingElement: HTMLElement, targetSelector: IElementSelector, duration: number) => (): Promise<void> => {
         const position = getTargetPosition(targetSelector)
         const centerPosition = {

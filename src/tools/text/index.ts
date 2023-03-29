@@ -20,6 +20,7 @@ export const setupPlugin = () => async () => {
         elements: {},
         primitives,
         composites,
+        enhancements: [],
         destroy: async () => {
             await primitives.clearTextSelection()()
         },

@@ -42,7 +42,7 @@ export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>)
         ...corePlugins.text.recommendedDefaults,
     }
 
-    const { primitives, composites } = mergeAppliancesCallables(planSettings.appliances, defaults)
+    const { primitives, composites } = mergeAppliancesCallables(planSettings, defaults)
 
     // composites overwrite primitives of the same name
     // use `planSettings.appliances.myPlugin.primitives.myAction`

@@ -1,6 +1,7 @@
-import { IPluginAppliance, IShowcaseMakerPlugin } from '../../src/tools/plugin'
-import { ArrayToRecord, SimpleFlatten } from '../../src/tools/typeUtils'
+import { ArrayMap, ArrayToRecord, SimpleFlattenObject } from '../../src/tools/typeUtils'
+import { IPluginAppliance, IShowcaseMakerPlugin } from '../tools/plugin'
 import { FilterEmptyProperties, RecordValuesToUnion, UnionToIntersection } from '../tools/typeUtils'
+import { EnhancedComposites } from './enhancementUtils'
 
 /////////////////// Aliases ////////////////////////////////////////////////////
 
@@ -21,26 +22,26 @@ type Composites<Appliances extends RecordAppliances> = { [Key in keyof Appliance
 type CompositesTypeRecord<Appliances extends RecordAppliances> = {
     [Key in keyof Composites<Appliances>]: ReturnType<Composites<Appliances>[Key]>
 }
-type CompositesType<Appliances extends RecordAppliances> = SimpleFlatten<CompositesTypeRecord<Appliances>>
+type CompositesType<Appliances extends RecordAppliances> = SimpleFlattenObject<CompositesTypeRecord<Appliances>>
 
 // primitives util types
 type Primitives<Appliances extends RecordAppliances> = { [Key in keyof Appliances]: Appliances[Key]['primitives'] }
 type PrimitivesTypeRecord<Appliances extends RecordAppliances> = {
     [Key in keyof Primitives<Appliances>]: Primitives<Appliances>[Key]
 }
-type PrimitivesType<Appliances extends RecordAppliances> = SimpleFlatten<PrimitivesTypeRecord<Appliances>>
+type PrimitivesType<Appliances extends RecordAppliances> = SimpleFlattenObject<PrimitivesTypeRecord<Appliances>>
 
 /**
  * Extracts all composites from given appliances.
  */
-function getAppliancesPrimitivesComposite<Appliances extends RecordAppliances>(
+function getAppliancesComposites<Appliances extends RecordAppliances>(
     appliances: Appliances,
     defaults: AppliancesDefaultsType<Appliances>,
 ) {
-    type CompositePrimitivesTypeTmp = CompositesType<Appliances>
+    type CompositesTypeTmp = CompositesType<Appliances>
 
-    const primitivesComposite = Object.keys(appliances).reduce<[CompositePrimitivesTypeTmp, any]>(
-        (acc: [CompositePrimitivesTypeTmp, any], item) => {
+    const composites = Object.keys(appliances).reduce<[CompositesTypeTmp, any]>(
+        (acc: [CompositesTypeTmp, any], item) => {
             const applianceName = item as keyof Appliances
 
             const [composites, pluginsLoaded] = acc
@@ -52,10 +53,10 @@ function getAppliancesPrimitivesComposite<Appliances extends RecordAppliances>(
                 { ...pluginsLoaded, [applianceName]: appliances[applianceName] },
             ]
         },
-        [{}, {}] as [CompositePrimitivesTypeTmp, any],
+        [{}, {}] as [CompositesTypeTmp, any],
     )[0]
 
-    return primitivesComposite
+    return composites
 }
 
 /**
@@ -68,12 +69,12 @@ function getAppliancesPrimitives<Appliances extends RecordAppliances>(appliances
         (acc: [PrimitivesTypeTmp, any], item) => {
             const applianceName = item as keyof Appliances
 
-            const [composites, pluginsLoaded] = acc
+            const [primitives, pluginsLoaded] = acc
 
-            const newComposite = appliances[applianceName].primitives
+            const newPrimitives = appliances[applianceName].primitives
 
             return [
-                { ...composites, ...newComposite },
+                { ...primitives, ...newPrimitives },
                 { ...pluginsLoaded, [applianceName]: appliances[applianceName] },
             ]
         },
@@ -83,16 +84,58 @@ function getAppliancesPrimitives<Appliances extends RecordAppliances>(appliances
     return primitives
 }
 
+function getAppliancesCompositesIncludingEnhancements<T extends ReadonlyPluginsBase>(
+    setupPlugins: MySetupPluginsResult<T>,
+    defaults: AppliancesDefaultsType<MySetupPluginsResult<T>['appliances']>,
+): EnhancedComposites<ArrayMap<OrderedAppliances<T>, 'name'>, MySetupPluginsResult<T>['appliances']> {
+    type Appliances = MySetupPluginsResult<T>['appliances']
+    type CompositesWithEnhancementsTypeTmp = EnhancedComposites<
+        ArrayMap<OrderedAppliances<T>, 'name'>,
+        MySetupPluginsResult<T>['appliances']
+    >
+
+    function canEnhancementBeActivated(appliancesLoaded: Appliances, requiredPlugins: readonly string[]): boolean {
+        //return requiredPlugins.reduce((acc, requiredPluginName) => acc && !!appliancesLoaded[requiredPluginName], true)
+        return requiredPlugins.reduce(
+            (acc, requiredPluginName: keyof Appliances) => acc && !!appliancesLoaded[requiredPluginName],
+            true,
+        )
+    }
+
+    const composites = setupPlugins.appliancesOrdered.reduce<[CompositesWithEnhancementsTypeTmp, any]>(
+        (acc: [CompositesWithEnhancementsTypeTmp, any], item) => {
+            const applianceName = item.name as keyof Appliances
+
+            const [composites, appliancesLoaded] = acc
+
+            const newComposite = item.composites(appliancesLoaded, defaults)
+            const newEnhancements = item.enhancements
+                .filter((item) => canEnhancementBeActivated(appliancesLoaded, item.requiredPlugins))
+                .map((item) => item.composites(appliancesLoaded, defaults))
+                .reduce((acc, item) => ({ ...acc, ...item }), {})
+
+            return [
+                { ...composites, ...newComposite, ...newEnhancements },
+                { ...appliancesLoaded, [applianceName]: item },
+            ]
+        },
+        [{}, {}] as [CompositesWithEnhancementsTypeTmp, any],
+    )[0]
+
+    return composites
+}
+
 /**
  * Merges primitives and composites of given appliances for easy access.
  */
-export function mergeAppliancesCallables<Appliances extends RecordAppliances>(
-    appliances: Appliances,
-    defaults: AppliancesDefaultsType<Appliances>,
+export function mergeAppliancesCallables<T extends ReadonlyPluginsBase>(
+    setupPlugins: MySetupPluginsResult<T>,
+    defaults: AppliancesDefaultsType<MySetupPluginsResult<T>['appliances']>,
 ) {
     return {
-        primitives: getAppliancesPrimitives(appliances),
-        composites: getAppliancesPrimitivesComposite(appliances, defaults),
+        primitives: getAppliancesPrimitives(setupPlugins.appliances),
+        composites: getAppliancesComposites(setupPlugins.appliances, defaults),
+        compositesIncludingEnhancements: getAppliancesCompositesIncludingEnhancements(setupPlugins, defaults), // TODO: proper defaults
     }
 }
 
@@ -103,9 +146,7 @@ type MyApplianceType<PluginType extends IShowcaseMakerPlugin<UnknownDefaults>> =
 /**
  * Extract of sorted appliances of given plugins.
  */
-export type OrderedAppliances<T extends ReadonlyPluginsBase> = { [Key in keyof T]: MyApplianceType<T[Key]> } & {
-    name: string
-}[]
+export type OrderedAppliances<T extends ReadonlyPluginsBase> = { [Key in keyof T]: MyApplianceType<T[Key]> }
 
 /**
  * Extract of indexed appliances of given plugins.

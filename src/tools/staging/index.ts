@@ -38,6 +38,7 @@ export const setupPlugin = (configuration: IConfiguration) => async () => {
         elements,
         primitives,
         composites: composites(elements, primitives),
+        enhancements: [],
         destroy: async () => {},
     } as const satisfies IPluginAppliance<IStagingPluginDefaults>
 }

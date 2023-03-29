@@ -19,6 +19,7 @@ export const setupPlugin = () => async () => {
         elements: {},
         primitives,
         composites,
+        enhancements: [],
         destroy: async () => {},
     } as const satisfies IPluginAppliance<ICorePluginDefaults>
 }

@@ -2,6 +2,13 @@ import { IPluginElements } from '../plugin'
 import { createOverlay } from '../utils'
 
 /**
+ * Configuration for Cursor plugin.
+ */
+export interface IConfiguration {
+    clickEffectDuration: number
+}
+
+/**
  * Creates overlay for a plugin that can insert it's HTML content into it. It will cover the whole screen.
  */
 export interface ICursorElements extends IPluginElements {

@@ -26,10 +26,18 @@ export type IPluginComposite<Defaults> = (
     defaults: Defaults,
 ) => any // TODO: improve
 
+export type SingleEnhancementAppliance<EnhancementsDefaults> = {
+    requiredPlugins: readonly string[]
+    composites: IPluginComposite<EnhancementsDefaults>
+    //composites: any // TODO: improve
+}
+
+export type IPluginEnhancement<EnhancementsDefaults> = readonly SingleEnhancementAppliance<EnhancementsDefaults>[]
+
 /**
  * Appliance set up by the plugin. In other words, this is a type for a "plugin instance".
  */
-export interface IPluginAppliance<Defaults> {
+export interface IPluginAppliance<Defaults, EnhancementsDefaults extends Defaults = Defaults> {
     name: string
     // TODO: Think about something like "optionalDependencies" that would enable exposure of some
     //       primitives and composites conditionally. Otherwise, Cursor plugin will depend on Audio plugin
@@ -41,5 +49,6 @@ export interface IPluginAppliance<Defaults> {
     elements: IPluginElements
     primitives: IPluginPrimitives
     composites: IPluginComposite<Defaults>
+    enhancements: IPluginEnhancement<EnhancementsDefaults>
     destroy: () => Promise<void>
 }

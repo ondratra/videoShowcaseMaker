@@ -28,6 +28,7 @@ export const setupPlugin = () => async () => {
         elements: {},
         primitives: primitives(blockingSound),
         composites: composites(blockingSound),
+        enhancements: [],
         destroy: async () => {},
     } as const satisfies IPluginAppliance<IAudioPluginDefaults>
 }

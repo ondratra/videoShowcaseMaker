@@ -36,12 +36,12 @@ export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>)
         ...corePlugins.staging.recommendedDefaults,
     }
 
-    const { primitives, composites } = mergeAppliancesCallables(planSettings.appliances, defaults)
+    const { primitives, composites, compositesIncludingEnhancements } = mergeAppliancesCallables(planSettings, defaults)
 
     // composites overwrite primitives of the same name
     // use `planSettings.appliances.myPlugin.primitives.myAction`
     // to get access to overwritten primitives (or composites)
-    const actions = { ...primitives, ...composites }
+    const actions = { ...primitives, ...composites, ...compositesIncludingEnhancements }
 
     return actions.asyncSequence([
         // starting clapboard

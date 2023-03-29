@@ -37,12 +37,14 @@ export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>)
         clickSoundUrl: '../assets/click.ogg',
     }
 
-    const { primitives, composites } = mergeAppliancesCallables(planSettings.appliances, defaults)
+    const { primitives, composites, compositesIncludingEnhancements } = mergeAppliancesCallables(planSettings, defaults)
 
     // composites overwrite primitives of the same name
     // use `planSettings.appliances.myPlugin.primitives.myAction`
-    // to get access to overwritten primitives (or composites)
-    const actions = { ...primitives, ...composites }
+    // to get access to overwritten primitives (or composites or enhancements)
+    const actions = { ...primitives, ...composites, ...compositesIncludingEnhancements }
+
+    console.log(actions)
 
     return actions.asyncSequence([
         // click example button
@@ -52,5 +54,7 @@ export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>)
 
         // ultimate test of typeguards
         //actions.shouldThrowError(), // this should trigger compile-time error
+
+        actions.testingEnhancement(),
     ])
 }
