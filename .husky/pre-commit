@@ -1,4 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# on Debian yarn is actually called `yarnpkg` so this script expects host system to have alias
+# for that in `~/.bash_aliases`
+. ~/.bash_aliases
+
 yarn checks
