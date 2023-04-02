@@ -39,12 +39,6 @@ export type IPluginEnhancement<EnhancementsDefaults> = readonly SingleEnhancemen
  */
 export interface IPluginAppliance<Defaults, EnhancementsDefaults extends Defaults = Defaults> {
     name: string
-    // TODO: Think about something like "optionalDependencies" that would enable exposure of some
-    //       primitives and composites conditionally. Otherwise, Cursor plugin will depend on Audio plugin
-    //       so it can play the mouse click sound, and Text plugin will rely on Cursor plugin so it can
-    //       create cursor move animation in its write to input composite. Because of that, even if you only
-    //       need text selection composite from Text plugin, you have to include Cursor and Audio plugins as well.
-    //       This feature might be hard to pull off due to typings constraints.
     requiredPlugins: readonly string[]
     elements: IPluginElements
     primitives: IPluginPrimitives
@@ -52,3 +46,12 @@ export interface IPluginAppliance<Defaults, EnhancementsDefaults extends Default
     enhancements: IPluginEnhancement<EnhancementsDefaults>
     destroy: () => Promise<void>
 }
+
+export const emptyPlugin = {
+    requiredPlugins: [] as string[],
+    elements: {},
+    primitives: {},
+    composites: () => ({}),
+    enhancements: [],
+    destroy: async () => {},
+} as const satisfies Partial<IPluginAppliance<unknown, unknown>>
