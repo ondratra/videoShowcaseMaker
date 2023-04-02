@@ -1,4 +1,4 @@
-import { IPluginAppliance } from '../plugin'
+import { emptyPlugin, IPluginAppliance } from '../plugin'
 import { composites, IStagingPluginDefaults } from './composites'
 import * as setup from './setup'
 
@@ -33,12 +33,12 @@ export const setupPlugin = (configuration: IConfiguration) => async () => {
 
     // plugin definition
     return {
+        ...emptyPlugin,
+
         name: 'staging' as const,
         requiredPlugins: ['core'],
         elements,
         primitives,
         composites: composites(elements, primitives),
-        enhancements: [],
-        destroy: async () => {},
     } as const satisfies IPluginAppliance<IStagingPluginDefaults>
 }

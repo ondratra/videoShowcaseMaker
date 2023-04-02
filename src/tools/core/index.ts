@@ -1,4 +1,4 @@
-import { IPluginAppliance } from '../plugin'
+import { emptyPlugin, IPluginAppliance } from '../plugin'
 import { composites, ICorePluginDefaults } from './composites'
 import * as primitives from './primitives'
 
@@ -14,12 +14,10 @@ export const recommendedDefaults: ICorePluginDefaults = {
  */
 export const setupPlugin = () => async () => {
     return {
+        ...emptyPlugin,
+
         name: 'core',
-        requiredPlugins: [],
-        elements: {},
         primitives,
         composites,
-        enhancements: [],
-        destroy: async () => {},
     } as const satisfies IPluginAppliance<ICorePluginDefaults>
 }

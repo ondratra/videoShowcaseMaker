@@ -1,4 +1,4 @@
-import { IPluginAppliance } from '../plugin'
+import { emptyPlugin, IPluginAppliance } from '../plugin'
 import { composites, IChatboxPluginDefaults } from './composites'
 import { primitives as rawPrimitives } from './primitives'
 import * as setup from './setup'
@@ -23,12 +23,10 @@ export const setupPlugin = (configuration: setup.IConfiguration) => async () => 
     const primitives = rawPrimitives(elements, configuration)
 
     return {
+        ...emptyPlugin,
+
         name: 'chatbox',
-        requiredPlugins: [],
-        elements: {},
         primitives,
         composites: composites(elements, primitives),
-        enhancements: [],
-        destroy: async () => {},
     } as const satisfies IPluginAppliance<IChatboxPluginDefaults>
 }

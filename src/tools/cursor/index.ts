@@ -1,4 +1,4 @@
-import { IPluginAppliance } from '../plugin'
+import { emptyPlugin, IPluginAppliance } from '../plugin'
 import { composites, ICursorPluginDefaults } from './composites'
 import { enhancements } from './enhancements'
 import { primitives as rawPrimitives } from './primitives'
@@ -34,6 +34,8 @@ export const setupPlugin = (configuration: setup.IConfiguration) => async () => 
 
     // plugin definition
     return {
+        ...emptyPlugin,
+
         name: 'cursor' as const,
         requiredPlugins: ['core', 'audio'],
         elements,

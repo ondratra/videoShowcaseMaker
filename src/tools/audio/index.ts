@@ -6,7 +6,7 @@
 //       and cursor click at same time
 //       !!! maybe this can/should be handled in generally for all plugins - what if you want 2 cursors at once? !!!
 
-import { IPluginAppliance } from '../plugin'
+import { emptyPlugin, IPluginAppliance } from '../plugin'
 import { BlockingSound } from './BlockingSound'
 import { composites, IAudioPluginDefaults } from './composites'
 import { primitives } from './primitives'
@@ -14,7 +14,7 @@ import { primitives } from './primitives'
 /**
  * Recommended/example values for default values for Core plugin.
  */
-export const recommendedDefaults: IAudioPluginDefaults = {}
+export const recommendedDefaults: IAudioPluginDefaults = {} satisfies Partial<IAudioPluginDefaults>
 
 /**
  * Audio plugin creates an HTML audio player and exposes basic manipulation actions for it.
@@ -23,12 +23,10 @@ export const setupPlugin = () => async () => {
     const blockingSound = new BlockingSound()
 
     return {
-        name: 'audio' as const,
-        requiredPlugins: [],
-        elements: {},
+        ...emptyPlugin,
+
+        name: 'audio',
         primitives: primitives(blockingSound),
         composites: composites(blockingSound),
-        enhancements: [],
-        destroy: async () => {},
     } as const satisfies IPluginAppliance<IAudioPluginDefaults>
 }

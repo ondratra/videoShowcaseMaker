@@ -1,4 +1,4 @@
-import { IPluginAppliance } from '../plugin'
+import { emptyPlugin, IPluginAppliance } from '../plugin'
 import { composites, ITextPluginDefaults } from './composites'
 import * as primitives from './primitives'
 
@@ -15,12 +15,12 @@ export const recommendedDefaults: ITextPluginDefaults = {
 export const setupPlugin = () => async () => {
     // plugin definition
     return {
+        ...emptyPlugin,
+
         name: 'text' as const,
         requiredPlugins: ['core', 'cursor'],
-        elements: {},
         primitives,
         composites,
-        enhancements: [],
         destroy: async () => {
             await primitives.clearTextSelection()()
         },

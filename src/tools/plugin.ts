@@ -47,6 +47,9 @@ export interface IPluginAppliance<Defaults, EnhancementsDefaults extends Default
     destroy: () => Promise<void>
 }
 
+/**
+ * Plugin stub that can be used as a basis for an actual plugin.
+ */
 export const emptyPlugin = {
     requiredPlugins: [] as string[],
     elements: {},
