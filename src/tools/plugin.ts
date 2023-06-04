@@ -11,7 +11,12 @@ export type IShowcaseMakerPlugin<Defaults> = () => Promise<IPluginAppliance<Defa
 /**
  * Elements created and exposed by the plugin.
  */
-export type IPluginElements = Record<string, HTMLElement> & { overlayElement?: HTMLElement }
+export type IPluginElements = Record<string, IPluginElement> & { overlayElement?: HTMLElement }
+export type IPluginElement =
+    | HTMLElement
+    | {
+          [key: string]: IPluginElement
+      }
 
 /**
  * Primitive actions exposed by the plugin.

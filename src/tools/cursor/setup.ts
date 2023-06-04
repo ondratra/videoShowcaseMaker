@@ -105,6 +105,7 @@ export function setupClickEffect(clickEffectElement: HTMLElement, duration: numb
                 'transitionend',
                 // eslint-disable-next-line @typescript-eslint/no-misused-promises
                 transitionListener(resolve, async () => {}),
+                { once: true },
             )
             clickEffectElement.style.transitionDuration = duration + 'ms'
             clickEffectElement.style.stroke = 'transparent'

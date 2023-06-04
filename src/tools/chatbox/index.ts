@@ -12,7 +12,7 @@ export const recommendedDefaults: IChatboxPluginDefaults = {}
  * Recommended/example configuration for Chatbox plugin.
  */
 export const recommendedConfiguration: setup.IConfiguration = {
-    chatboxSlideDuration: 500,
+    chatboxSlideDuration: 1200,
 }
 
 /**
@@ -22,10 +22,13 @@ export const setupPlugin = (configuration: setup.IConfiguration) => async () => 
     const elements = setup.createChatboxElements(configuration.chatboxSlideDuration)
     const primitives = rawPrimitives(elements, configuration)
 
+    // TODO: add enhancements for audio plugin that plays sound on chatbox message send and recieve
+
     return {
         ...emptyPlugin,
 
         name: 'chatbox',
+        elements,
         primitives,
         composites: composites(elements, primitives),
     } as const satisfies IPluginAppliance<IChatboxPluginDefaults>

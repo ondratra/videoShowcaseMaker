@@ -8,7 +8,7 @@ import {
 } from '../../src'
 
 // declare all CSS selectors that will be used by showcase plan
-export const selectors = {
+const selectors = {
     exampleButton1: '#exampleButton1',
 }
 
@@ -34,6 +34,9 @@ export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>)
         ...corePlugins.core.recommendedDefaults,
         ...corePlugins.audio.recommendedDefaults,
         ...corePlugins.cursor.recommendedDefaults,
+
+        // TODO: upgrade how static resources are passed to showcase plan - maybe create new class for static assets
+        //       or something like that
         clickSoundUrl: '../assets/click.ogg',
     }
 

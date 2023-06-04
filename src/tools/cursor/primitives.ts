@@ -9,6 +9,9 @@ export interface ITargetPosition {
     y: number
 }
 
+// TODO: fix runClickEffect -> currently it can't be run twice in succession - second effect will not be execute
+//       and can be run only after first one has already ended
+
 export const primitives = (elements: ICursorElements, configuration: IConfiguration) => {
     return {
         runClickEffect: () => setupClickEffect(elements.clickEffectElement, configuration.clickEffectDuration),
@@ -32,7 +35,7 @@ const moveCursorTo =
         movingElement.style.transitionDuration = duration + 'ms'
         movingElement.style.transform = `translate(${targetPosition.x}px, ${targetPosition.y}px)`
 
-        return resultPromise
+        return resultPromise as any
     }
 
 /**

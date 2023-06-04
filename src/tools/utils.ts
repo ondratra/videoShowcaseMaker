@@ -3,6 +3,10 @@
  */
 export function createOverlay(name: string, content?: string, styles?: string): HTMLElement {
     const overlayElement = document.createElement('div')
+
+    // TODO: add way to set z-index for the layer so that multiple layers can be sorted as needed
+    // TODO: prevent multiple overlays having the same id (if showcase plan runs multiple times -> id is duplicated)
+
     overlayElement.id = 'showcaseOverlay_' + name
     overlayElement.style.position = 'fixed'
     overlayElement.style.zIndex = '9999'

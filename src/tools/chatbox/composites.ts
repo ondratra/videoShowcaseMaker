@@ -1,5 +1,5 @@
 import { IPluginAppliance } from '../plugin'
-import { ChatboxLogic, ChatCounterpartyGender, ChatParties } from './ChatboxLogic'
+import { ChatboxLogic, ChatCounterpartyGender, ChatParty, ChatPartyTypes } from './ChatboxLogic'
 import { primitives as rawPrimitives } from './primitives'
 import { IChatboxElements } from './setup'
 
@@ -13,7 +13,15 @@ export interface IChatboxPluginDefaults {}
 export const composites =
     (elements: IChatboxElements, _primitives: ReturnType<typeof rawPrimitives>) =>
     (_pluginsLoaded: Record<string, IPluginAppliance<unknown>>, _defaults: IChatboxPluginDefaults) => {
-        const chatbox = new ChatboxLogic(elements)
+        const party = {
+            gender: ChatCounterpartyGender.male,
+            name: 'Mr. Bob',
+        }
+        const counterparty = {
+            gender: ChatCounterpartyGender.female,
+            name: 'Mrs. Alice',
+        }
+        const chatbox = new ChatboxLogic(elements, party, counterparty)
 
         return {
             // chatbox
@@ -29,7 +37,7 @@ export const composites =
             chatSendMessageFromInput: () => async () => chatbox.chatSendMessageFromInput(),
             chatParty: (text: string) => () => {
                 chatbox.addMessage({
-                    party: ChatParties.party,
+                    party: ChatPartyTypes.party,
                     text,
                 })
                 return Promise.resolve()
@@ -37,12 +45,11 @@ export const composites =
             chatSwitchParties: () => async () => chatbox.chatSwitchParties(),
             chatCounterparty: (text: string) => () => {
                 chatbox.addMessage({
-                    party: ChatParties.counterparty,
+                    party: ChatPartyTypes.counterparty,
                     text,
                 })
                 return Promise.resolve()
             },
-            chatSetCounterparty: (gender: ChatCounterpartyGender, name: string) => async () =>
-                chatbox.setCounterparty(gender, name),
+            chatSetCounterparty: (chatParty: ChatParty) => async () => chatbox.setCounterparty(chatParty),
         }
     }

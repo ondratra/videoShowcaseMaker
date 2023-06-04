@@ -2,7 +2,7 @@ import { IChatboxElements } from './setup'
 
 // TODO: rewrite - at least split gui actions from abstract actions (see addMessage/setMessatges for weird logic mixup)
 
-export enum ChatParties {
+export enum ChatPartyTypes {
     party,
     counterparty,
 }
@@ -13,29 +13,42 @@ export enum ChatCounterpartyGender {
 }
 
 export interface IChatboxMessage {
-    party: ChatParties
+    party: ChatPartyTypes
     text: string
+}
+
+export interface ChatParty {
+    gender: ChatCounterpartyGender
+    name: string
 }
 
 export class ChatboxLogic {
     private messages: IChatboxMessage[] = []
     private chatElements: IChatboxElements
 
-    public constructor(chatElements: IChatboxElements) {
+    // non-null assertation here is needed until https://github.com/microsoft/TypeScript/issues/30462 is solved
+    private party!: ChatParty
+    private counterparty!: ChatParty
+
+    public constructor(chatElements: IChatboxElements, party: ChatParty, counterparty: ChatParty) {
         this.chatElements = chatElements
+        this.setParty(party)
+        this.setCounterparty(counterparty)
     }
-    /*
-    public setParties(partyName: string, counterpartyName: string) {
-        //this.chatElements.
-    }
-*/
-    public setCounterparty(gender: ChatCounterpartyGender, name: string): void {
-        this.chatElements.counterpartyNameElement.innerText = name
+
+    public setCounterparty(chatParty: ChatParty): void {
+        this.counterparty = chatParty
+
+        this.chatElements.counterpartyNameElement.innerText = chatParty.name
 
         this.chatElements.counterpartyIcon.male.style.visibility =
-            gender == ChatCounterpartyGender.male ? 'visible' : 'hidden'
+            chatParty.gender == ChatCounterpartyGender.male ? 'visible' : 'hidden'
         this.chatElements.counterpartyIcon.female.style.visibility =
-            gender == ChatCounterpartyGender.female ? 'visible' : 'hidden'
+            chatParty.gender == ChatCounterpartyGender.female ? 'visible' : 'hidden'
+    }
+
+    public setParty(chatParty: ChatParty): void {
+        this.party = chatParty
     }
 
     public showChatbox(): Promise<void> {
@@ -63,7 +76,7 @@ export class ChatboxLogic {
         this.chatElements.inputElement.value = ''
 
         this.addMessage({
-            party: ChatParties.party,
+            party: ChatPartyTypes.party,
             text,
         })
     }
@@ -72,11 +85,15 @@ export class ChatboxLogic {
         const messages = this.messages.map((item) => {
             return {
                 ...item,
-                party: item.party == ChatParties.party ? ChatParties.counterparty : ChatParties.party,
+                party: item.party == ChatPartyTypes.party ? ChatPartyTypes.counterparty : ChatPartyTypes.party,
             }
         })
 
         this.setMessages(messages)
+
+        const tmpCounterparty = this.counterparty
+        this.setCounterparty(this.party)
+        this.setParty(tmpCounterparty)
     }
 
     public setMessages(messages: IChatboxMessage[]): void {
@@ -91,7 +108,7 @@ export class ChatboxLogic {
 
         const messageElement = document.createElement('div')
         messageElement.classList.add('message')
-        messageElement.classList.add(message.party == ChatParties.party ? 'party' : 'counterparty')
+        messageElement.classList.add(message.party == ChatPartyTypes.party ? 'party' : 'counterparty')
         messageElement.innerText = message.text
 
         this.chatElements.messagesContainer.appendChild(messageElement)

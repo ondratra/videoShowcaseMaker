@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <script src="../assets/fontAwesome/fontawesome.min.js" /></script>
+    <script src="../assets/fontAwesome/solid.min.js" /></script>
+    <link rel="stylesheet"  href="../assets/fontAwesome/svg-with-js.min.css" />
+
+</head>
+<body>
+    <h1>Example 004 - Chatbox</h1>
+
+    <div>
+        <input
+            id="startButton"
+            type="button"
+            value="Click here to start"
+            style="background-color: lawngreen;"
+        />
+    </div>
+
+    <hr />
+
+    <!-- TODO: add descriptions readable in browser (to all examples) -->
+
+    <!-- load app js -->
+    <script type="module">
+        import { executePlan } from '../../dist/index.js';
+        import { getPlugins, showcasePlan } from '../../dist/examples/004_chatbox/showcaseScenario.js';
+
+        // init start button
+        document.querySelector('#startButton').addEventListener('click', async () => {
+            await executePlan(showcasePlan, getPlugins())
+        })
+    </script>
+</body>
+</html>

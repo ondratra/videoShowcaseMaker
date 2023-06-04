@@ -41,6 +41,7 @@ export const composites = (
     //       atm nonexisting primitives/composites may be called here and it won't be discovered during compilation
     // TODO: handle calling composites of other plugins - atm `pluginsLoaded` & `defaults`(!) needs to be provided
     //       that means plugin's defaults need to contain defaults of all of its required plugins
+    // TODO: add this as an enhancement using cursor plugin
     /*
     clickInputAndWriteIntoIt: (selector: IElementSelector, text: string | (() => string), strokeInterval?: number) => pluginsLoaded.core.primitives.asyncSequence([
         pluginsLoaded.cursor.composites.moveCursorToElement(selector),

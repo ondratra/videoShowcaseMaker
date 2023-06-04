@@ -25,5 +25,7 @@ export const asyncDontWait =
  * Triggers click event of the requested element.
  */
 export const triggerElementClick = (selector: IElementSelector) => async () => {
-    findElement(selector).click()
+    const element = findElement(selector)
+    element.click()
+    element.focus()
 }

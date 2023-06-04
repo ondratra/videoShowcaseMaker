@@ -1,3 +1,4 @@
+import { IPluginElements } from '../plugin'
 import { createOverlay } from '../utils'
 import { styles, template } from './template'
 
@@ -8,7 +9,7 @@ export interface IConfiguration {
     chatboxSlideDuration: number
 }
 
-export interface IChatboxElements {
+export interface IChatboxElements extends IPluginElements {
     chatboxContainer: HTMLElement
     counterpartyNameElement: HTMLElement
     messagesContainer: HTMLElement
@@ -20,6 +21,7 @@ export interface IChatboxElements {
     }
     overlayElement: HTMLElement
 }
+
 export function createChatboxElements(chatboxSlideDuration: number): IChatboxElements {
     const overlayElement = createOverlay('chatbox', template, styles)
 

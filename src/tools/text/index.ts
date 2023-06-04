@@ -6,7 +6,8 @@ import * as primitives from './primitives'
  * Recommended/example values for default values for Text plugin.
  */
 export const recommendedDefaults: ITextPluginDefaults = {
-    strokeInterval: 30,
+    //strokeInterval: 30,
+    strokeInterval: 100,
 }
 
 /**
@@ -17,8 +18,12 @@ export const setupPlugin = () => async () => {
     return {
         ...emptyPlugin,
 
+        // TODO: add enhancements for audio plugin that plays sound on text input write
+
         name: 'text' as const,
-        requiredPlugins: ['core', 'cursor'],
+        // TODO: add enhancements for cursor plugin
+        // requiredPlugins: ['core', 'cursor'], // old dependency -> remove after TODO is done
+        requiredPlugins: ['core'],
         primitives,
         composites,
         destroy: async () => {

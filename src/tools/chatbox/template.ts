@@ -44,12 +44,12 @@ export const template = `<div class="center">
                 Mr. Anonymous
             </div>
             <div class="seen">
-                Today at 12:56
+                Last seen at 13:56
             </div>
         </div>
         <div class="chatBody">
             <div class="time">
-                Today at 11:41
+                Today at 13:56
             </div>
             <div class="messages">
                 <!--
@@ -214,7 +214,7 @@ export const styles = `
         border-bottom-right-radius: 0;
         border-bottom-left-radius: 0;
         background: white;
-        box-shadow: 0 0 8rem 0 rgba(0, 0, 0, 0.1), 0rem 2rem 4rem -3rem rgba(0, 0, 0, 0.5);
+        box-shadow: 0 0 25px 0 rgb(0 0 0 / 10%), 0 5px 15px 0px rgb(0 0 0 / 50%);
     }
     .chat .contact.bar {
         flex-basis: 3.5rem;
@@ -228,7 +228,7 @@ export const styles = `
         flex-shrink: 2;
         overflow-y: auto;
         box-shadow: inset 0 2rem 2rem -2rem rgba(0, 0, 0, 0.05), inset 0 -2rem 2rem -2rem rgba(0, 0, 0, 0.05);
-        min-height: calc(100% - 150px);
+        min-height: calc(100% - 184px);
     }
     .chat .chatBody .time {
         font-size: 0.8rem;
@@ -289,6 +289,10 @@ export const styles = `
         width: 24px;
         height: 24px;
         fill: #666;
+    }
+    .chat .input .sendIcon:hover {
+        fill: #006cff;
+        cursor: pointer;
     }
     .chat .input {
         box-sizing: border-box;

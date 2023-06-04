@@ -26,7 +26,7 @@ module.exports = {
   ],
   rules: {
     // general rules
-    quotes: [2, 'single'],
+    quotes: [2, 'single', {avoidEscape: true}],
     semi: ['error', 'never'],
 
     // allow occasional 'empty' construct
