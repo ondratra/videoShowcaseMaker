@@ -1,6 +1,6 @@
 import { emptyPlugin, IPluginAppliance } from '../plugin'
 import { composites, ICursorPluginDefaults } from './composites'
-import { enhancements } from './enhancements'
+import { enhancements, ICursorPluginEnhancementsDefaults } from './enhancements'
 import { primitives as rawPrimitives } from './primitives'
 import * as setup from './setup'
 
@@ -37,7 +37,7 @@ export const setupPlugin = (configuration: setup.IConfiguration) => async () => 
         ...emptyPlugin,
 
         name: 'cursor' as const,
-        requiredPlugins: ['core', 'audio'],
+        requiredPlugins: ['core'],
         elements,
         primitives,
         composites: composites(elements, primitives),
@@ -45,5 +45,5 @@ export const setupPlugin = (configuration: setup.IConfiguration) => async () => 
         destroy: async () => {
             clearHoverInterval()
         },
-    } as const satisfies IPluginAppliance<ICursorPluginDefaults>
+    } as const satisfies IPluginAppliance<ICursorPluginDefaults, ICursorPluginEnhancementsDefaults>
 }

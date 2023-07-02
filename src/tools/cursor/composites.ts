@@ -9,6 +9,8 @@ import { ICursorElements } from './setup'
 export interface ICursorPluginDefaults {
     duration: number
     delayAfterClickEffect: number
+
+    // TODO: move to enhancements'defaults
     clickSoundUrl: string
 }
 

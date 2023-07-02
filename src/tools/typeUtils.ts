@@ -139,12 +139,6 @@ export type TupleReturnTypes<T extends readonly ((...args: any[]) => any)[]> = {
  * `[{myProperty: 'a', ...}, {myProperty: 'b', ...}, ...]` -> `{a: {myProperty: 'a', ...}, b: {myProperty: 'b', ...}}`
  * `[{myProperty: 'a', ...}, {myProperty: 'b', ...}, ...]` + select `myProperty` -> `{a: 'a'}, {b: 'b'}, ...}`
  */
-/*
-export type ArrayToRecord<Array extends readonly any[], Key extends keyof Array[number], Value extends (keyof Array[number]) | undefined = undefined> = {
-    [K in Array[number] as K[Key]]: Value extends keyof K
-        ? K[Value]
-        : K
-*/
 export type ArrayToRecord<
     Array extends readonly any[],
     Key extends keyof Array[number],

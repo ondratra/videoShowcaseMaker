@@ -51,10 +51,5 @@ function cursorWithAudioComposites(
          * Triggers click audio & visual effect at current cursor's position..
          */
         clickEffectOnly: () => clickEffectOnly,
-
-        // TODO: remove
-        testingEnhancement: () => async () => {
-            console.log('oooooooooooooook')
-        },
     }
 }

@@ -6,14 +6,9 @@
     <script src="../assets/fontAwesome/solid.min.js" /></script>
     <link rel="stylesheet"  href="../assets/fontAwesome/svg-with-js.min.css" />
 
-    <style>
-        .withHover:hover {
-            background-color: teal;
-        }
-    </style>
 </head>
 <body>
-    <h1>Example 001 - Basics</h1>
+    <h1>Example 008 - SelectboxSelection</h1>
 
     <div>
         <input
@@ -27,22 +22,18 @@
     <hr />
 
     <div>
-        <div class="withHover">
-            Example Div with hover effect
-        </div>
-
-        <input
-            type="button"
-            id="exampleButton1"
-            value="Example button1"
-            onclick="this.style.backgroundColor = '#' + Math.random().toString(16).slice(-6)"
-        />
+        <select id="showcaseSelectbox">
+            <option>--- Select your preference ---</option>
+            <option>My value 1</option>
+            <option>My value 2</option>
+            <option>My value 3</option>
+        </select>
     </div>
 
     <!-- load app js -->
     <script type="module">
         import { executePlan } from '../../dist/index.js';
-        import { getPlugins, showcasePlan } from '../../dist/examples/001_basics/showcaseScenario.js';
+        import { getPlugins, showcasePlan } from '../../dist/examples/008_selectboxSelection/showcaseScenario.js';
 
         // init start button
         document.querySelector('#startButton').addEventListener('click', async () => {

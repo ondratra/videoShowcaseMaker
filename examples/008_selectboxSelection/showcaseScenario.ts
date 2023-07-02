@@ -8,16 +8,18 @@ import {
 } from '../../src'
 
 // declare all CSS selectors that will be used by showcase plan
-const selectors = {
-    exampleButton1: '#exampleButton1',
+export const selectors = {
+    showcaseSelectbox: '#showcaseSelectbox',
 }
 
-// declare all plugins that will be used by showcase plan
+export const targetOptions = [1, 2]
+
 export function getPlugins() {
     const plugins = [
         corePlugins.core.setupPlugin(),
-        corePlugins.audio.setupPlugin(),
+        corePlugins.debug.setupPlugin(),
         corePlugins.cursor.setupPlugin(corePlugins.cursor.recommendedConfiguration),
+        corePlugins.selectboxSelection.setupPlugin(),
     ] as const satisfies ReadonlyPluginsBase
 
     return plugins
@@ -32,11 +34,9 @@ type PluginsType = ReturnType<typeof getPlugins>
 export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>): IAsyncAction {
     const defaults: DefaultsType<PluginsType> = {
         ...corePlugins.core.recommendedDefaults,
-        ...corePlugins.audio.recommendedDefaults,
         ...corePlugins.cursor.recommendedDefaults,
 
-        // TODO: upgrade how static resources are passed to showcase plan - maybe create new class for static assets
-        //       or something like that
+        // TODO: remove this after enhancements are optional (sounds are not used in this example)
         clickSoundUrl: '../assets/click.ogg',
     }
 
@@ -44,15 +44,15 @@ export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>)
 
     // composites overwrite primitives of the same name
     // use `planSettings.appliances.myPlugin.primitives.myAction`
-    // to get access to overwritten primitives (or composites or enhancements)
+    // to get access to overwritten primitives (or composites)
     const actions = { ...primitives, ...composites, ...compositesIncludingEnhancements }
 
-    console.log(actions)
-
     return actions.asyncSequence([
-        // click example button
-        actions.moveCursorToElement(selectors.exampleButton1),
-        actions.clickElement(selectors.exampleButton1),
+        actions.showSelectboxSelection(selectors.showcaseSelectbox),
+        actions.delay(),
+        actions.hideSelectboxSelection(targetOptions[0]),
+        actions.delay(),
+        actions.cursorMoveSelectboxSelection(selectors.showcaseSelectbox, targetOptions[1]),
         actions.delay(),
     ])
 }

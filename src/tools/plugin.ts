@@ -11,7 +11,7 @@ export type IShowcaseMakerPlugin<Defaults> = () => Promise<IPluginAppliance<Defa
 /**
  * Elements created and exposed by the plugin.
  */
-export type IPluginElements = Record<string, IPluginElement> & { overlayElement?: HTMLElement }
+export type IPluginElements = Record<string, IPluginElement | null> & { overlayElement?: HTMLElement }
 export type IPluginElement =
     | HTMLElement
     | {
@@ -48,7 +48,10 @@ export interface IPluginAppliance<Defaults, EnhancementsDefaults extends Default
     elements: IPluginElements
     primitives: IPluginPrimitives
     composites: IPluginComposite<Defaults>
+    // TODO: improve enhancements type - atm defaults for all enhancements must be set even if you plan to use only one of them
+    //       also enable disabling of unwanted enhancements
     enhancements: IPluginEnhancement<EnhancementsDefaults>
+    utilities: Record<string, unknown> // TODO: try to transform this into useful interface
     destroy: () => Promise<void>
 }
 
@@ -61,5 +64,6 @@ export const emptyPlugin = {
     primitives: {},
     composites: () => ({}),
     enhancements: [],
+    utilities: {},
     destroy: async () => {},
 } as const satisfies Partial<IPluginAppliance<unknown, unknown>>
