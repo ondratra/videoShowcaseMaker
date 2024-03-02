@@ -27,8 +27,8 @@ export type SimpleFlattenObject<T> = T extends object
 type FlattenArrayRecursiveInner<T> = T extends []
     ? []
     : T extends [infer T0, ...infer Ts]
-    ? [...FlattenArrayRecursiveInner<T0>, ...FlattenArrayRecursiveInner<Ts>]
-    : [T]
+      ? [...FlattenArrayRecursiveInner<T0>, ...FlattenArrayRecursiveInner<Ts>]
+      : [T]
 
 /**
  * Flattens array. Deeply nested arrays are allowed.
@@ -57,14 +57,14 @@ export type FilterArray<
         ? readonly [...Result, T0]
         : Result
     : T extends readonly [infer T0, ...infer Ts]
-    ? T0 extends ValidArrayItem
-        ? Ts extends (ValidArrayItem | [])[]
-            ? FilterArray<Ts, ValidArrayItem, readonly [...Result, T0]>
-            : 'this can never happen' // this is prevented by `FlattenArrayOneLevel` parameters definition
-        : Ts extends (ValidArrayItem | [])[]
-        ? FilterArray<Ts, ValidArrayItem, Result>
-        : Result
-    : any
+      ? T0 extends ValidArrayItem
+          ? Ts extends (ValidArrayItem | [])[]
+              ? FilterArray<Ts, ValidArrayItem, readonly [...Result, T0]>
+              : 'this can never happen' // this is prevented by `FlattenArrayOneLevel` parameters definition
+          : Ts extends (ValidArrayItem | [])[]
+            ? FilterArray<Ts, ValidArrayItem, Result>
+            : Result
+      : any
 
 /////////////////// Misc ///////////////////////////////////////////////////////
 

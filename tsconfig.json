@@ -7,7 +7,7 @@
     "outDir": "dist",
     "rootDir": ".",
     "baseUrl": ".",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "isolatedModules": true,
     "declaration": false,
     "allowSyntheticDefaultImports": true,

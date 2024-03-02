@@ -91,33 +91,39 @@ async function setupPlugins<Plugins extends ReadonlyPluginsBase>(
     }
 
     // setup plugins and collect their appliances
-    const appliancesOrdered = await Object.keys(pluginsToSetup).reduce(async (accPromise, key) => {
-        const acc = await accPromise
-        const plugin = pluginsToSetup[parseInt(key)]
-        const appliance = await plugin()
+    const appliancesOrdered = await Object.keys(pluginsToSetup).reduce(
+        async (accPromise, key) => {
+            const acc = await accPromise
+            const plugin = pluginsToSetup[parseInt(key)]
+            const appliance = await plugin()
 
-        // ensure all required plugins are loaded
-        const missingRequiredPlugins = detectMissingRequiredPlugins(acc, appliance.requiredPlugins)
-        if (missingRequiredPlugins.length) {
-            const tmpLoadedMsg = acc.map((item) => item.name).join(', ')
-            const tmpMissingMsg = missingRequiredPlugins.join(', ')
-            throw new Error(
-                `Not all required plugins are loaded! Loaded: [${tmpLoadedMsg}]. Missing: [${tmpMissingMsg}]. Required by: "${appliance.name}"`,
-            )
-        }
+            // ensure all required plugins are loaded
+            const missingRequiredPlugins = detectMissingRequiredPlugins(acc, appliance.requiredPlugins)
+            if (missingRequiredPlugins.length) {
+                const tmpLoadedMsg = acc.map((item) => item.name).join(', ')
+                const tmpMissingMsg = missingRequiredPlugins.join(', ')
+                throw new Error(
+                    `Not all required plugins are loaded! Loaded: [${tmpLoadedMsg}]. Missing: [${tmpMissingMsg}]. Required by: "${appliance.name}"`,
+                )
+            }
 
-        acc.push(appliance)
+            acc.push(appliance)
 
-        return acc
-        // due to some strange TS behaviour a ridiculous `& unknown[]` additions needs to be here for everything to work
-    }, Promise.resolve([]) as Promise<OrderedAppliances<Plugins> & unknown[]>)
+            return acc
+            // due to some strange TS behaviour a ridiculous `& unknown[]` additions needs to be here for everything to work
+        },
+        Promise.resolve([]) as Promise<OrderedAppliances<Plugins> & unknown[]>,
+    )
 
     // index appliances by their names
-    const appliances = appliancesOrdered.reduce((acc, item) => {
-        ;(acc as Record<string, typeof item>)[item.name] = item // this underwhelming typecast is needed to fulfill type guards
+    const appliances = appliancesOrdered.reduce(
+        (acc, item) => {
+            ;(acc as Record<string, typeof item>)[item.name] = item // this underwhelming typecast is needed to fulfill type guards
 
-        return acc
-    }, {} as ArrayToRecord<OrderedAppliances<Plugins>, 'name'>)
+            return acc
+        },
+        {} as ArrayToRecord<OrderedAppliances<Plugins>, 'name'>,
+    )
 
     return { appliancesOrdered, appliances }
 }

@@ -51,6 +51,7 @@ type GetEnhancementsHelperPieces<
         : Enhancementsssss[Key]['composites']
 }
 
+// prettier-ignore
 /**
  * Walks through array of plugin appliances and combines all composites and loadable enhancements.
  */
@@ -62,25 +63,24 @@ type ExtractCompositesAndLoadableEnhancements<
 > = PluginsToBeLoaded extends []
     ? Result
     : PluginsToBeLoaded extends readonly [infer P0, ...infer Ps]
-    ? P0 extends keyof Appliances
-        ? Ps extends readonly (keyof Appliances)[]
-            ? ExtractCompositesAndLoadableEnhancements<
-                  Ps,
-                  readonly [...LoadedPluginNames, P0],
-                  Appliances,
-                  readonly [
-                      ...Result,
-                      CompositesAndEnhancementCombination<
-                          Appliances[P0]['composites'],
-                          Appliances[P0]['enhancements'],
-                          LoadedPluginNames
-                      >,
-                  ]
-              >
-            : [] // 'this can never happen 1'
-        : [] // 'this can never happen 2'
-    : [] // 'this can never happen 3'
-;[] // 'this can never happen 4'
+        ? P0 extends keyof Appliances
+            ? Ps extends readonly (keyof Appliances)[]
+                ? ExtractCompositesAndLoadableEnhancements<
+                    Ps,
+                    readonly [...LoadedPluginNames, P0],
+                    Appliances,
+                    readonly [
+                        ...Result,
+                        CompositesAndEnhancementCombination<
+                            Appliances[P0]['composites'],
+                            Appliances[P0]['enhancements'],
+                            LoadedPluginNames
+                        >,
+                    ]
+                 >
+                : [] // 'this can never happen 1'
+            : [] // 'this can never happen 2'
+        : [] // 'this can never happen 3'
 
 type MergedCompositesAndEnhancements = Record<string, any> // TODO -> connect to return type of `composites` func
 
@@ -90,6 +90,7 @@ type MergedCompositesAndEnhancements = Record<string, any> // TODO -> connect to
 // type ApplianceCompositesAndEnhancements = Pick<IPluginAppliance<UnknownDefaults>, 'composites' | 'enhancements'>
 type ApplianceCompositesAndEnhancements = Record<string, any> // TODO - line above unfortunately doesn't work
 
+// prettier-ignore
 /**
  * Merged composites from loadable enhancement belonging to a single plugin appliance.
  */
@@ -99,13 +100,14 @@ type MergedEnhancementArrays<
 > = EnhancementArrays extends any[]
     ? Result // line above this one may be usefull actually - mb even somehow 'replace' this one
     : EnhancementArrays extends readonly [infer P0, ...infer Ps]
-    ? P0 extends ReturnType<IPluginComposite<UnknownDefaults>>
-        ? Ps extends ReturnType<IPluginComposite<UnknownDefaults>>[]
-            ? MergedEnhancementArrays<Ps, MergeObjects<Result, P0>>
+        ? P0 extends ReturnType<IPluginComposite<UnknownDefaults>>
+            ? Ps extends ReturnType<IPluginComposite<UnknownDefaults>>[]
+                ? MergedEnhancementArrays<Ps, MergeObjects<Result, P0>>
+                : 'this can never happen'
             : 'this can never happen'
         : 'this can never happen'
-    : 'this can never happen'
 
+// prettier-ignore
 /**
  * Combined composites and composites of loadable enhancements into single objects.
  */
@@ -115,15 +117,15 @@ type CombinedCompositesAndLoadableEnhancements<
 > = CompositesAndEnhancementsArray extends []
     ? Result
     : CompositesAndEnhancementsArray extends readonly [infer P0, ...infer Ps]
-    ? P0 extends ApplianceCompositesAndEnhancements
-        ? Ps extends readonly ApplianceCompositesAndEnhancements[]
-            ? CombinedCompositesAndLoadableEnhancements<
-                  Ps,
-                  MergeObjects<Result, MergedEnhancementArrays<P0['enhancements']>>
-              >
+        ? P0 extends ApplianceCompositesAndEnhancements
+            ? Ps extends readonly ApplianceCompositesAndEnhancements[]
+                ? CombinedCompositesAndLoadableEnhancements<
+                    Ps,
+                    MergeObjects<Result, MergedEnhancementArrays<P0['enhancements']>>
+                >
+                : 'this can never happen'
             : 'this can never happen'
         : 'this can never happen'
-    : 'this can never happen'
 
 /**
  * Combines composites and enhancements from given appliances.

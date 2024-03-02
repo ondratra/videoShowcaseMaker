@@ -1,4 +1,4 @@
-import glob from 'glob'
+import {glob} from 'glob'
 import rollupTypescript from '@rollup/plugin-typescript'
 import dts from "rollup-plugin-dts";
 import {Plugin as RollupPlugin} from 'rollup';
@@ -6,12 +6,12 @@ import {Plugin as RollupPlugin} from 'rollup';
 // basic rollup config setup
 const baseConfig = (input: string, output: string, plugins: RollupPlugin[]) => ({
   input: input,
-    output: {
-      file: output,
-      format: 'es',
-    },
+  output: {
+    file: output,
+    format: 'es',
     preserveModules: false,
-    plugins,
+  },
+  plugins,
 })
 
 // common plugins setup
@@ -26,12 +26,12 @@ export default [
   // library typings
   {
     input: 'src/index.ts',
-      output: {
-        file: 'dist/index.d.ts',
-        format: 'es',
-      },
+    output: {
+      file: 'dist/index.d.ts',
+      format: 'es',
       preserveModules: false,
-      plugins: [dts()],
+    },
+    plugins: [dts()],
   },
 
   // examples
