@@ -1,4 +1,4 @@
-import { asyncSequence } from '../tools/core/primitives'
+import { asyncSequence } from '../plugins/core/primitives'
 import { IAsyncAction } from '../tools/plugin'
 import { ArrayToRecord } from '../tools/typeUtils'
 import { createOverlay } from '../tools/utils'
