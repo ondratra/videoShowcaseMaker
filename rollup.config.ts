@@ -9,9 +9,7 @@ const baseConfig = (input: string, output: string, plugins: RollupPlugin[]) => (
   input: input,
   output: {
     file: output,
-    format: 'es',
-    //preserveModules: false,
-    exports: 'named'
+    format: 'cjs',
   },
   plugins,
 })
@@ -29,13 +27,8 @@ export default [
   {
     input: 'src/index.ts',
     output: {
-      dir: 'dist/types/',
-      format: 'es',
-
-      // NOTE: We need to preserve TS modules due to way video plan's type is derived.
-      // When modules are mingled to one file and modules are converted to namespaces errors occurs in package consuming
-      // this library.
-      preserveModules: true,
+      file: 'dist/index.d.ts',
+      format: 'cjs',
     },
     plugins: [dts()],
   },
