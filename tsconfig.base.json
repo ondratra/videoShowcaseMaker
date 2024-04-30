@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "ES2020",
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "lib": ["es2020", "dom"],
+    "strict": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "declaration": false,
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
+
+    "paths": {
+      "videoShowcaseMaker": ["dist/index"]
+    }
+  }
+}
