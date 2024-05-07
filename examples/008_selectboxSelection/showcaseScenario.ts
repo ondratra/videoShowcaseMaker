@@ -12,7 +12,7 @@ export const selectors = {
     showcaseSelectbox: '#showcaseSelectbox',
 }
 
-export const targetOptions = [1, 2]
+export const selectboxTargetOptions = [1, 2]
 
 export function getPlugins() {
     const plugins = [
@@ -37,7 +37,11 @@ export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>)
         ...corePlugins.cursor.recommendedDefaults,
 
         // TODO: remove this after enhancements are optional (sounds are not used in this example)
-        clickSoundUrl: '../assets/click.ogg',
+        soundUrls: {
+            click: '../assets/click.ogg',
+            mouseDown: '../assets/mouseDown.ogg',
+            mouseUp: '../assets/mouseUp.ogg',
+        },
     }
 
     const { primitives, composites, compositesIncludingEnhancements } = mergeAppliancesCallables(planSettings, defaults)
@@ -50,9 +54,9 @@ export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>)
     return actions.asyncSequence([
         actions.showSelectboxSelection(selectors.showcaseSelectbox),
         actions.delay(),
-        actions.hideSelectboxSelection(targetOptions[0]),
+        actions.hideSelectboxSelection(selectboxTargetOptions[0]),
         actions.delay(),
-        actions.cursorMoveSelectboxSelection(selectors.showcaseSelectbox, targetOptions[1]),
+        actions.cursorMoveSelectboxSelection(selectors.showcaseSelectbox, selectboxTargetOptions[1]),
         actions.delay(),
     ])
 }

@@ -1,5 +1,5 @@
 import { IAsyncAction } from '../../tools/plugin'
-import { findElement, IElementSelector } from '../../tools/utils'
+import { findElement, getTargetPosition, IElementSelector } from '../../tools/utils'
 
 /**
  * Waits a given time.
@@ -27,5 +27,38 @@ export const asyncDontWait =
 export const triggerElementClick = (selector: IElementSelector) => async () => {
     const element = findElement(selector)
     element.click()
+    element.focus()
+}
+
+/**
+ * Triggers mouse down event of the requested element.
+ */
+export const triggerElementMouseDown = (selector: IElementSelector, cursorElement: HTMLElement) => async () => {
+    const element = findElement(selector)
+    const cursorPosition = getTargetPosition(cursorElement)
+
+    const event = new MouseEvent('mousedown', {
+        bubbles: true,
+        cancelable: true,
+        clientX: cursorPosition.x,
+        clientY: cursorPosition.y,
+    })
+
+    element.dispatchEvent(event)
+    element.focus()
+}
+
+/**
+ * Triggers mouse up event of the requested element.
+ */
+export const triggerElementMouseUp = (selector: IElementSelector) => async () => {
+    const element = findElement(selector)
+
+    const event = new MouseEvent('mouseup', {
+        bubbles: true,
+        cancelable: true,
+    })
+
+    element.dispatchEvent(event)
     element.focus()
 }

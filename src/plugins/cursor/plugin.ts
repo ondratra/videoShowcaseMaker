@@ -7,7 +7,7 @@ import * as setup from './setup'
 /**
  * Recommended/example values for default values for Cursor plugin.
  */
-export const recommendedDefaults: Omit<ICursorPluginDefaults, 'clickSoundUrl'> = {
+export const recommendedDefaults: Omit<ICursorPluginDefaults, 'soundUrls'> = {
     duration: 1000,
     delayAfterClickEffect: 300,
 } satisfies Partial<ICursorPluginDefaults>

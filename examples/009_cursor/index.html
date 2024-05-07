@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <script src="../assets/fontAwesome/fontawesome.min.js" /></script>
+    <script src="../assets/fontAwesome/solid.min.js" /></script>
+    <link rel="stylesheet"  href="../assets/fontAwesome/svg-with-js.min.css" />
+
+    <style>
+        .withHover {
+            line-height: 50px;
+            height: 50px;
+        }
+
+        .withHover:hover {
+            background-color: teal;
+        }
+
+        #dragContainer {
+            position: relative;
+            min-height: 500px;
+            background-color: grey;
+            margin: 10px 0;
+            padding: 10px;
+        }
+
+        #draggableButton {
+            position: absolute;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        #draggableButton.moving {
+            cursor: move;
+            background-color: teal;
+        }
+
+        #dragTarget {
+            position: absolute;
+            left: 350px;
+            top: 350px;
+            padding: 30px;
+            border: 3px outset white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Example 009 - Cursor</h1>
+
+    <div>
+        <input
+            id="startButton"
+            type="button"
+            value="Click here to start"
+            style="background-color: lawngreen;"
+        />
+    </div>
+
+    <hr />
+
+    <div>
+        <div class="withHover">
+            Example Div with hover effect
+        </div>
+
+        <input
+            type="button"
+            id="basicButton"
+            value="Change color"
+            onclick="this.style.backgroundColor = '#' + Math.random().toString(16).slice(-6)"
+        />
+
+        <div
+            id="dragContainer"
+            onmousemove="onMouseMove(event)"
+        >
+            <div id="dragTarget">
+                Drag here
+            </div>
+
+            <input
+                type="button"
+                id="draggableButton"
+                value="Drag me button"
+                onmousedown="startDrag(event)"
+                onmouseup="stopDrag(event)"
+            />
+        </div>
+    </div>
+
+    <script>
+        const classNameMoving = "moving"
+        const dragContainer = document.querySelector('#dragContainer')
+        const dragButton = document.querySelector('#draggableButton')
+
+        let movementStartPosition = [0, 0]
+
+        function startDrag(event) {
+            dragButton.classList.add(classNameMoving)
+
+            movementStartPosition = [
+                event.clientX - dragButton.getBoundingClientRect().left,
+                event.clientY - dragButton.getBoundingClientRect().top,
+            ]
+        }
+
+        function stopDrag(event) {
+            event.target.classList.remove(classNameMoving)
+        }
+
+        function onMouseMove(event) {
+            const isMoving = dragButton.classList.contains(classNameMoving)
+
+            if (!isMoving) {
+                return;
+            }
+
+            const containerOffset = dragContainer.getBoundingClientRect()
+            const containerComputedStyle = window.getComputedStyle(dragContainer)
+
+            const containerPadding = [
+                parseInt(containerComputedStyle.paddingLeft),
+                parseInt(containerComputedStyle.paddingTop),
+            ]
+
+            const position = [
+                event.clientX - containerOffset.left - movementStartPosition[0],
+                event.clientY - containerOffset.top - movementStartPosition[1],
+            ]
+
+            dragButton.style.left = position[0] + 'px';
+            dragButton.style.top = position[1] + 'px';
+        }
+    </script>
+
+    <!-- load app js -->
+    <script type="module">
+        import { executePlan } from '../../dist/index.js';
+        import { getPlugins, showcasePlan } from '../../dist/examples/009_cursor/showcaseScenario.js';
+
+        // init start button
+        document.querySelector('#startButton').addEventListener('click', async () => {
+            await executePlan(showcasePlan, getPlugins())
+        })
+    </script>
+</body>
+</html>

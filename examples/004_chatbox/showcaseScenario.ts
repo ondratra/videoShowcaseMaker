@@ -63,7 +63,11 @@ export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>)
         ...corePlugins.text.recommendedDefaults,
         ...corePlugins.chatbox.recommendedDefaults,
 
-        clickSoundUrl: '../assets/click.ogg',
+        soundUrls: {
+            click: '../assets/click.ogg',
+            mouseDown: '../assets/mouseDown.ogg',
+            mouseUp: '../assets/mouseUp.ogg',
+        },
     }
 
     const { primitives, composites, compositesIncludingEnhancements } = mergeAppliancesCallables(planSettings, defaults)

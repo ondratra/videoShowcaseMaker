@@ -26,10 +26,40 @@ export function createOverlay(name: string, content?: string, styles?: string): 
  */
 export type IElementSelector = string | [number, string]
 
+/*
+ * Type representing 2D position.
+ */
+export interface IPosition {
+    x: number
+    y: number
+    add: (operand: IPosition) => IPosition
+}
+
+/*
+ * Class representing 2D position.
+ */
+export class Position implements IPosition {
+    public x: number
+    public y: number
+
+    public constructor(x: number, y: number) {
+        this.x = x
+        this.y = y
+    }
+
+    public add(secondPosition: IPosition): IPosition {
+        return new Position(this.x + secondPosition.x, this.y + secondPosition.y)
+    }
+}
+
 /**
  * Finds selected element in the document.
  */
-export function findElement(selector: IElementSelector): HTMLElement {
+export function findElement(selector: IElementSelector | HTMLElement): HTMLElement {
+    if (selector instanceof HTMLElement) {
+        return selector
+    }
+
     if (!Array.isArray(selector)) {
         const result = document.querySelector(selector) as HTMLElement
 
@@ -46,3 +76,28 @@ export function findElement(selector: IElementSelector): HTMLElement {
  */
 export const mbDefault = <T>(value: T | undefined, defaultValue: T): T =>
     typeof value == 'undefined' ? defaultValue : value
+
+/**
+ * Returns position of the requested element.
+ */
+export function getTargetPositionRect(targetSelector: IElementSelector | HTMLElement): DOMRect {
+    const targetElement = findElement(targetSelector)
+    const positionRect = targetElement.getBoundingClientRect()
+
+    return positionRect
+}
+
+/**
+ * Returns position of the requested element.
+ */
+export function getTargetPosition(targetSelector: IElementSelector | HTMLElement): IPosition {
+    const targetElement = findElement(targetSelector)
+    const positionWithoutMargin = getTargetPositionRect(targetSelector)
+
+    const position = new Position(
+        positionWithoutMargin.x - (parseInt(targetElement.style.marginLeft) || 0),
+        positionWithoutMargin.y - (parseInt(targetElement.style.marginTop) || 0),
+    )
+
+    return position
+}

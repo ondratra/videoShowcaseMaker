@@ -1,6 +1,7 @@
 import { IPluginAppliance } from '../../tools/plugin'
-import { IElementSelector, mbDefault } from '../../tools/utils'
-import { ITargetPosition, primitives as rawPrimitives } from './primitives'
+import { IElementSelector, IPosition, mbDefault } from '../../tools/utils'
+import { IEventEmitterElementSelector } from './moveEmitter'
+import { primitives as rawPrimitives } from './primitives'
 import { ICursorElements } from './setup'
 
 /**
@@ -11,7 +12,11 @@ export interface ICursorPluginDefaults {
     delayAfterClickEffect: number
 
     // TODO: move to enhancements'defaults
-    clickSoundUrl: string
+    soundUrls: {
+        click: string
+        mouseDown: string
+        mouseUp: string
+    }
 }
 
 /**
@@ -30,7 +35,7 @@ export const composites =
             /**
              * Moves cursor to selected position.
              */
-            moveCursorTo: (targetPosition: ITargetPosition, duration?: number) =>
+            moveCursorTo: (targetPosition: IPosition, duration?: number) =>
                 primitives.moveCursorTo(
                     elements.cursorContainer,
                     targetPosition,
@@ -62,5 +67,30 @@ export const composites =
              * Triggers click visual effect at current cursor's position..
              */
             clickEffectOnly: () => clickEffectOnly,
+
+            /**
+             * Triggers target element's mousedown event and shows visual effect at current cursor's position.
+             * Cursor doesn't have to be on top of the element.
+             */
+            mouseDown: (emitMoveEventsOnElementSelector: IEventEmitterElementSelector) =>
+                pluginsLoaded.core.primitives.asyncSequence([
+                    clickEffectOnly,
+                    primitives.mouseDown(emitMoveEventsOnElementSelector),
+                    pluginsLoaded.core.primitives.triggerElementMouseDown(
+                        emitMoveEventsOnElementSelector,
+                        elements.cursorContainer,
+                    ),
+                ]),
+
+            /**
+             * Triggers target element's mouseup event and shows visual effect at current cursor's position.
+             * Cursor doesn't have to be on top of the element.
+             */
+            mouseUp: (emitMoveEventsOnElementSelector: IEventEmitterElementSelector) =>
+                pluginsLoaded.core.primitives.asyncSequence([
+                    clickEffectOnly,
+                    primitives.mouseUp(),
+                    pluginsLoaded.core.primitives.triggerElementMouseUp(emitMoveEventsOnElementSelector),
+                ]),
         }
     }

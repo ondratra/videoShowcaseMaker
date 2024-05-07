@@ -38,8 +38,13 @@ export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>)
         ...corePlugins.core.recommendedDefaults,
         ...corePlugins.audio.recommendedDefaults,
         ...corePlugins.cursor.recommendedDefaults,
-        clickSoundUrl: '../assets/click.ogg',
         ...corePlugins.text.recommendedDefaults,
+
+        soundUrls: {
+            click: '../assets/click.ogg',
+            mouseDown: '../assets/mouseDown.ogg',
+            mouseUp: '../assets/mouseUp.ogg',
+        },
     }
 
     const { primitives, composites } = mergeAppliancesCallables(planSettings, defaults)

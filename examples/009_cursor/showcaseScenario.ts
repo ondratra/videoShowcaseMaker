@@ -11,6 +11,9 @@ import {
 // declare all CSS selectors that will be used by showcase plan
 const selectors = {
     basicButton: '#basicButton',
+    draggableButton: '#draggableButton',
+    dragContainer: '#dragContainer',
+    dragTarget: '#dragTarget',
 }
 
 // declare all plugins that will be used by showcase plan
@@ -52,12 +55,19 @@ export function showcasePlan(planSettings: IShowcasePlanParameters<PluginsType>)
     // to get access to overwritten primitives (or composites or enhancements)
     const actions = { ...primitives, ...composites, ...compositesIncludingEnhancements }
 
-    console.log(actions)
-
     return actions.asyncSequence([
         // click example button
         actions.moveCursorToElement(selectors.basicButton),
         actions.clickElement(selectors.basicButton),
+        actions.delay(),
+
+        // drag draggable button
+        actions.moveCursorToElement(selectors.draggableButton),
+        actions.mouseDown(selectors.draggableButton),
+        actions.delay(),
+        actions.moveCursorToElement(selectors.dragTarget),
+        actions.delay(),
+        actions.mouseUp(selectors.draggableButton),
         actions.delay(),
     ])
 }

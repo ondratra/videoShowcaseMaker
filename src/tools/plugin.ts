@@ -1,6 +1,11 @@
 /**
  * Basal async action definition used by Showcase Maker.
  */
+export type IAction = () => void
+
+/**
+ * Basal async action definition used by Showcase Maker.
+ */
 export type IAsyncAction = () => Promise<void>
 
 /**
@@ -14,6 +19,9 @@ export type IShowcaseMakerPlugin<Defaults> = () => Promise<IPluginAppliance<Defa
 export type IPluginElements = Record<string, IPluginElement | null> & { overlayElement?: HTMLElement }
 export type IPluginElement =
     | HTMLElement
+    // TODO: consider separating this into different type (& object in plugin.ts)
+    // TODO: `...args: unknown[]` doesn't work properly here -> I'm forced to use any[] here
+    | ((...args: any[]) => void)
     | {
           [key: string]: IPluginElement
       }
@@ -52,7 +60,7 @@ export interface IPluginAppliance<Defaults, EnhancementsDefaults extends Default
     //       also enable disabling of unwanted enhancements
     enhancements: IPluginEnhancement<EnhancementsDefaults>
     utilities: Record<string, unknown> // TODO: try to transform this into useful interface
-    destroy: () => Promise<void>
+    destroy: IAsyncAction
 }
 
 /**

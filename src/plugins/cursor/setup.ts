@@ -1,5 +1,10 @@
-import { IPluginElements } from '../../tools/plugin'
+import { IAction, IAsyncAction, IPluginElements } from '../../tools/plugin'
 import { createOverlay } from '../../tools/utils'
+import { IEventEmitterElementSelector, setupMoveEventEmitter } from './moveEmitter'
+
+// internal constants
+const moveEmitInterval = 50
+const hoverInterval = 50
 
 /**
  * Configuration for Cursor plugin.
@@ -16,6 +21,12 @@ export interface ICursorElements extends IPluginElements {
     cursorElement: HTMLElement
     clickEffectElement: HTMLElement
     overlayElement: HTMLElement
+
+    setCursorToPointer: () => void
+    setCursorToDrag: () => void
+
+    startEmittingMoveEvents: (eventEmitterElementSelector: IEventEmitterElementSelector) => void
+    stopEmittingMoveEvents: () => void
 }
 
 /**
@@ -43,13 +54,36 @@ export function createCursorElements(): ICursorElements {
     // shadow and stroke are two valid alternative to highlight
     // cursorElement.style.textShadow = '#000 0px 0px 2px'
 
+    const iconsContainer = document.createElement('div')
     // cursor icon has to be in separate div, otherwise it can break hover effect
     // due to some Font Awesome div replacement (or something like that)
-    const tmp = document.createElement('div')
-    tmp.classList.add('fas')
-    tmp.classList.add('fa-mouse-pointer')
+    const iconContainerPointer = document.createElement('div')
+    const iconPointer = document.createElement('div')
+    iconPointer.classList.add('fas')
+    iconPointer.classList.add('fa-mouse-pointer')
 
-    cursorElement.appendChild(tmp)
+    const iconContainerDrag = document.createElement('div')
+    const iconDrag = document.createElement('div')
+    iconDrag.classList.add('fas')
+    iconDrag.classList.add('fa-arrows-up-down-left-right')
+    iconContainerDrag.style.display = 'none'
+
+    iconContainerPointer.appendChild(iconPointer)
+    iconContainerDrag.appendChild(iconDrag)
+
+    iconsContainer.appendChild(iconContainerPointer)
+    iconsContainer.appendChild(iconContainerDrag)
+    cursorElement.appendChild(iconsContainer)
+
+    const setCursorToPointer = () => {
+        iconContainerPointer.style.display = 'block'
+        iconContainerDrag.style.display = 'none'
+    }
+    const setCursorToDrag = () => {
+        iconContainerPointer.style.display = 'none'
+        iconContainerDrag.style.display = 'block'
+        console.log('aaaa', iconDrag.style.display)
+    }
 
     const clickEffectElement = document.createElement('div')
     clickEffectElement.style.width = '100px'
@@ -69,22 +103,30 @@ export function createCursorElements(): ICursorElements {
     // create overlay and insert all elements
     const overlayElement = createOverlay('cursor')
 
-    cursorContainer.appendChild(cursorElement)
     cursorContainer.appendChild(clickEffectElement)
+    cursorContainer.appendChild(cursorElement)
     overlayElement.appendChild(cursorContainer)
+
+    const { startEmittingMoveEvents, stopEmittingMoveEvents } = setupMoveEventEmitter(cursorElement, moveEmitInterval)
 
     return {
         cursorContainer,
         cursorElement,
         clickEffectElement,
         overlayElement,
+
+        setCursorToPointer,
+        setCursorToDrag,
+
+        startEmittingMoveEvents,
+        stopEmittingMoveEvents,
     }
 }
 
 /**
  * Setups mouse click audio & visual effect.
  */
-export function setupClickEffect(clickEffectElement: HTMLElement, duration: number): () => Promise<void> {
+export function setupClickEffect(clickEffectElement: HTMLElement, duration: number): IAsyncAction {
     // on-click-effect-end listener
     const transitionListener = (resolve: () => void, onEnd: () => Promise<void>) =>
         async function myListener() {
@@ -118,13 +160,11 @@ export function setupClickEffect(clickEffectElement: HTMLElement, duration: numb
 /**
  * Setups virtual onHover effect and returns function that can destroy it.
  */
-export function setupHoverEffect(cursorElements: ICursorElements): () => void {
-    const interval = 50
-
+export function setupHoverEffect(cursorElements: ICursorElements): IAction {
     const hoverClass = '__showcase_virtual_hover'
 
     prepareVirtualStyles(cursorElements.cursorContainer, hoverClass)
-    const clearEffect = prepareHoverInterval(cursorElements.cursorElement, interval, hoverClass)
+    const clearEffect = prepareHoverInterval(cursorElements, hoverInterval, hoverClass)
 
     return clearEffect
 }
@@ -182,14 +222,16 @@ function getCssRules(filter: (rule: CSSStyleRule) => boolean): CSSStyleRule[] {
  * Prepares checking mechanism that activates virtual onHover effect when real or virtual cursor
  * moves over elements with onHover effect set.
  */
-function prepareHoverInterval(cursorElement: HTMLElement, interval: number, hoverClass: string) {
+function prepareHoverInterval(cursorElements: ICursorElements, interval: number, hoverClass: string) {
     // element with active onHover effect
     let lastElement: Element | null = null
+    const clearMutationObserver: IAction = () => {}
 
     const hoverInterval = setInterval(() => {
         // get cursor position and element under it
-        const cursorPosition = cursorElement.getBoundingClientRect()
+        const cursorPosition = cursorElements.cursorElement.getBoundingClientRect()
         const elementMouseIsOver = document.elementFromPoint(cursorPosition.x, cursorPosition.y)
+        const applyCursorStyles = () => applyCursorStyleFromElement(cursorElements, elementMouseIsOver)
 
         // do nothing if cursor moves over same element as before
         if (lastElement === elementMouseIsOver) {
@@ -199,12 +241,16 @@ function prepareHoverInterval(cursorElement: HTMLElement, interval: number, hove
         // turn off onHover effect on previous element (if any)
         if (lastElement) {
             lastElement.classList.remove(hoverClass)
+            clearMutationObserver()
         }
 
         // turn on onHover effect on current element (if any)
         if (elementMouseIsOver !== null) {
             elementMouseIsOver.classList.add(hoverClass)
+            setupElementMutationObserver(elementMouseIsOver, applyCursorStyles)
         }
+
+        applyCursorStyles()
 
         // remember element with active onHover effect
         lastElement = elementMouseIsOver
@@ -214,4 +260,50 @@ function prepareHoverInterval(cursorElement: HTMLElement, interval: number, hove
     const clearEffect = () => clearInterval(hoverInterval)
 
     return clearEffect
+}
+
+/**
+ * Applies relevant cursor image to virtual cursor depending on effective css cursor style.
+ */
+function applyCursorStyleFromElement(cursorElements: ICursorElements, elementMouseIsOver: Element | null) {
+    // retrieve active css-cursor
+    const cssCursorType = elementMouseIsOver ? window.getComputedStyle(elementMouseIsOver).cursor : 'pointer'
+
+    // css-cursor to curosr image conversion table
+    const supportedCursors: Record<string, () => void> = {
+        auto: cursorElements.setCursorToPointer,
+        default: cursorElements.setCursorToPointer,
+        pointer: cursorElements.setCursorToPointer,
+        move: cursorElements.setCursorToDrag,
+    }
+
+    // set proper cursor image
+    const enableSelectedCursor = supportedCursors[cssCursorType] || supportedCursors.pointer
+    enableSelectedCursor()
+}
+
+/**
+ * Prepares mechanism that apply css cursor style to virtual cursor.
+ */
+function setupElementMutationObserver(element: Element, onChange: IAction): IAction {
+    // prepare mutation observer config
+    const config = {
+        attributes: true,
+    }
+
+    // prepare mutation callback
+    const onMutationCallback = () => {
+        onChange()
+    }
+
+    // create observer
+    const observer = new MutationObserver(onMutationCallback)
+    observer.observe(element, config)
+
+    // create interval clear trigger
+    const clear = () => {
+        observer.disconnect()
+    }
+
+    return clear
 }

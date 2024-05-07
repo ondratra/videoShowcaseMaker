@@ -7,6 +7,11 @@
     <link rel="stylesheet"  href="../assets/fontAwesome/svg-with-js.min.css" />
 
     <style>
+        .withHover {
+            line-height: 50px;
+            height: 50px;
+        }
+
         .withHover:hover {
             background-color: teal;
         }
@@ -33,8 +38,8 @@
 
         <input
             type="button"
-            id="exampleButton1"
-            value="Example button1"
+            id="basicButton"
+            value="Change color"
             onclick="this.style.backgroundColor = '#' + Math.random().toString(16).slice(-6)"
         />
     </div>
