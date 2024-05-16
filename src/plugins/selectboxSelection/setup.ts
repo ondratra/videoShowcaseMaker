@@ -1,6 +1,8 @@
 import { IPluginElements } from '../../tools/plugin'
 import { createOverlay } from '../../tools/utils'
 
+const optionCssClassName = '__vsm_selectboxSelection_option'
+
 export interface ISelectboxSelectionElements extends IPluginElements {
     selectionContainer: HTMLElement
     optionTemplate: HTMLElement
@@ -18,12 +20,16 @@ export function createSelectboxSelectionElements(): ISelectboxSelectionElements 
     selectionContainer.style.visibility = 'hidden'
 
     const optionTemplate = document.createElement('div')
+    optionTemplate.classList.add(optionCssClassName)
     optionTemplate.style.display = 'flex'
     optionTemplate.style.height = '34px'
     optionTemplate.style.padding = '6px 20px'
-    optionTemplate.style.backgroundColor = '#fff'
+    optionTemplate.style.pointerEvents = 'auto'
 
     const overlayElement = createOverlay('selectboxSelection')
+    overlayElement.style.zIndex = '5'
+
+    preparePseudoClassStyles(overlayElement)
 
     overlayElement.appendChild(selectionContainer)
 
@@ -34,4 +40,22 @@ export function createSelectboxSelectionElements(): ISelectboxSelectionElements 
 
         currentSelectbox: null,
     }
+}
+
+function preparePseudoClassStyles(overlayElement: HTMLElement) {
+    // insert virtual onHover styles to document
+    const styleElement = document.createElement('style')
+
+    const content = `
+        .${optionCssClassName} {
+            background-color: #fff;
+        }
+
+        .${optionCssClassName}:hover {
+            background-color: #ccc;
+        }
+    `
+
+    styleElement.innerHTML = content
+    overlayElement.appendChild(styleElement)
 }

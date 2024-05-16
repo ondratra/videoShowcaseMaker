@@ -34,12 +34,11 @@ function selectboxSelectionWithCursorComposites(
 ) {
     const cursorComposites = pluginsLoaded.cursor.composites(pluginsLoaded, defaults)
 
+    // TODO: add sound if audio plugin is loaded as well
     return {
         cursorMoveSelectboxSelection: (selector: IElementSelector, selectionIndex: number) =>
             asyncSequence([
-                pluginsLoaded.debug.primitives.log(selector),
                 cursorComposites.moveCursorToElement(selector),
-                pluginsLoaded.debug.primitives.log('ooook'),
                 pluginsLoaded.core.primitives.delay(),
                 primitives.showSelectboxSelection(selector),
                 pluginsLoaded.core.primitives.delay(),

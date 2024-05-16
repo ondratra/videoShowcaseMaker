@@ -17,7 +17,6 @@ export const selectboxTargetOptions = [1, 2]
 export function getPlugins() {
     const plugins = [
         corePlugins.core.setupPlugin(),
-        corePlugins.debug.setupPlugin(),
         corePlugins.cursor.setupPlugin(corePlugins.cursor.recommendedConfiguration),
         corePlugins.selectboxSelection.setupPlugin(),
     ] as const satisfies ReadonlyPluginsBase

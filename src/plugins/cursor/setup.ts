@@ -82,7 +82,6 @@ export function createCursorElements(): ICursorElements {
     const setCursorToDrag = () => {
         iconContainerPointer.style.display = 'none'
         iconContainerDrag.style.display = 'block'
-        console.log('aaaa', iconDrag.style.display)
     }
 
     const clickEffectElement = document.createElement('div')
@@ -102,6 +101,7 @@ export function createCursorElements(): ICursorElements {
 
     // create overlay and insert all elements
     const overlayElement = createOverlay('cursor')
+    overlayElement.style.zIndex = '10'
 
     cursorContainer.appendChild(clickEffectElement)
     cursorContainer.appendChild(cursorElement)
@@ -163,8 +163,19 @@ export function setupClickEffect(clickEffectElement: HTMLElement, duration: numb
 export function setupHoverEffect(cursorElements: ICursorElements): IAction {
     const hoverClass = '__showcase_virtual_hover'
 
-    prepareVirtualStyles(cursorElements.cursorContainer, hoverClass)
-    const clearEffect = prepareHoverInterval(cursorElements, hoverInterval, hoverClass)
+    // prepare styles for initial set of CSS rules
+    prepareVirtualStyles(Array.prototype.slice.call(document.styleSheets), cursorElements.cursorContainer, hoverClass)
+
+    // prepare interval that activates hover effect for element under the cursor
+    const hoverIntervalClear = prepareHoverInterval(cursorElements, hoverInterval, hoverClass)
+    // watch for any new styles added to page and create virtual CSS :hover for them
+    const stylesWatchdogClear = setupStylesAddedWatchdog(cursorElements.cursorContainer, hoverClass)
+
+    // clear hover effect
+    const clearEffect = () => {
+        hoverIntervalClear()
+        stylesWatchdogClear()
+    }
 
     return clearEffect
 }
@@ -173,16 +184,14 @@ export function setupHoverEffect(cursorElements: ICursorElements): IAction {
  * Prepares and inserts to document a virtual CSS :hover style that reacts on hover of both real cursor
  * and virtual one set up by this plugin.
  */
-function prepareVirtualStyles(cursorContainer: HTMLElement, hoverClass: string) {
-    // filter elements with hover effect defined
-    const filter = (item: CSSStyleRule) => !!item.selectorText && !!item.selectorText.match(/:hover/)
-    const rules = getCssRules(filter)
+function prepareVirtualStyles(styleSheets: CSSStyleSheet[], cursorContainer: HTMLElement, hoverClass: string) {
+    // prepare CSS rules
+    const rulesText = constructVirtualHoverStyleRules(styleSheets, hoverClass)
 
-    // prepare virtual onHover class for each element
-    const rulesText = rules
-        .map((item) => item.cssText)
-        .map((item) => item.replace(':hover', '.' + hoverClass))
-        .join('\n')
+    // do nothing if no rules needs to be added
+    if (!rulesText) {
+        return
+    }
 
     // insert virtual onHover styles to document
     const styleElement = document.createElement('style')
@@ -191,11 +200,26 @@ function prepareVirtualStyles(cursorContainer: HTMLElement, hoverClass: string) 
 }
 
 /**
+ * Creates CSS rules mimicking hover effect for the virtual cursor.
+ */
+function constructVirtualHoverStyleRules(styleSheets: CSSStyleSheet[], hoverClass: string) {
+    // filter elements with hover effect defined
+    const filter = (item: CSSStyleRule) => !!item.selectorText && !!item.selectorText.match(/:hover/)
+    const rules = getCssRules(styleSheets, filter)
+
+    // prepare virtual onHover class for each element
+    const rulesText = rules
+        .map((item) => item.cssText)
+        .map((item) => item.replace(':hover', '.' + hoverClass))
+        .join('\n')
+
+    return rulesText
+}
+
+/**
  * Finds and returns CSS rules selected by a callback from document's existing CSS rules.
  */
-function getCssRules(filter: (rule: CSSStyleRule) => boolean): CSSStyleRule[] {
-    const styleSheets = document.styleSheets
-
+function getCssRules(styleSheets: CSSStyleSheet[], filter: (rule: CSSStyleRule) => boolean): CSSStyleRule[] {
     // iterate over stylesheets and return filtered rules
     const rules = Object.keys(styleSheets).reduce((acc, styleSheetKey) => {
         const styleSheetKeyNumber = parseInt(styleSheetKey) // Object.keys auto converts keys to 'string', but we need proper numbers
@@ -257,7 +281,10 @@ function prepareHoverInterval(cursorElements: ICursorElements, interval: number,
     }, interval)
 
     // create interval clear trigger
-    const clearEffect = () => clearInterval(hoverInterval)
+    const clearEffect = () => {
+        clearInterval(hoverInterval)
+        clearMutationObserver()
+    }
 
     return clearEffect
 }
@@ -300,7 +327,54 @@ function setupElementMutationObserver(element: Element, onChange: IAction): IAct
     const observer = new MutationObserver(onMutationCallback)
     observer.observe(element, config)
 
-    // create interval clear trigger
+    // create observer clear trigger
+    const clear = () => {
+        observer.disconnect()
+    }
+
+    return clear
+}
+
+/**
+ * Watches for new <style> element additions and ensures that respective virtual hover CSS rules are created.
+ */
+function setupStylesAddedWatchdog(cursorContainer: HTMLElement, hoverClass: string) {
+    // mutation observer callback
+    function onStyleElementInserted(mutationsList: MutationRecord[], _observer: MutationObserver) {
+        for (const mutation of mutationsList) {
+            if (mutation.type != 'childList') {
+                continue
+            }
+
+            mutation.addedNodes.forEach((node) => {
+                if (!(node instanceof HTMLElement)) {
+                    return
+                }
+
+                const element = node as HTMLStyleElement
+
+                const allSheets = Array.prototype.slice
+                    .call(element.querySelectorAll('style'))
+                    .concat(element.tagName.toLowerCase() != 'style' ? [element] : [])
+                    .map((item) => item.sheet)
+                    .filter((item) => item)
+
+                prepareVirtualStyles(allSheets, cursorContainer, hoverClass)
+            })
+        }
+    }
+
+    // prepare observer config
+    const config = {
+        childList: true,
+        subtree: true,
+    }
+
+    // create observer
+    const observer = new MutationObserver(onStyleElementInserted)
+    observer.observe(document.documentElement, config)
+
+    // create observer clear trigger
     const clear = () => {
         observer.disconnect()
     }
