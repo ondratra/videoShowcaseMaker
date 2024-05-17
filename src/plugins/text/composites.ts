@@ -1,4 +1,4 @@
-import { IPluginAppliance } from '../../tools/plugin'
+import { IPluginApplianceEnriched } from '../../tools/plugin'
 import { findElement, IElementSelector, mbDefault } from '../../tools/utils'
 import { selectText, writeIntoInput } from './primitives'
 
@@ -13,7 +13,7 @@ export interface ITextPluginDefaults {
  * Text plugin's composites.
  */
 export const composites = (
-    pluginsLoaded: Record<string, IPluginAppliance<unknown>>,
+    pluginsLoaded: Record<string, IPluginApplianceEnriched<unknown>>,
     defaults: ITextPluginDefaults,
 ) => ({
     /**

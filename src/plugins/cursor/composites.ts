@@ -1,4 +1,4 @@
-import { IPluginAppliance } from '../../tools/plugin'
+import { IPluginApplianceEnriched } from '../../tools/plugin'
 import { IElementSelector, IPosition, mbDefault } from '../../tools/utils'
 import { IEventEmitterElementSelector } from './moveEmitter'
 import { primitives as rawPrimitives } from './primitives'
@@ -24,7 +24,7 @@ export interface ICursorPluginDefaults {
  */
 export const composites =
     (elements: ICursorElements, primitives: ReturnType<typeof rawPrimitives>) =>
-    (pluginsLoaded: Record<string, IPluginAppliance<unknown>>, defaults: ICursorPluginDefaults) => {
+    (pluginsLoaded: Record<string, IPluginApplianceEnriched<unknown>>, defaults: ICursorPluginDefaults) => {
         // click's visual effect composite
         const clickEffectOnly = pluginsLoaded.core.primitives.asyncSequence([
             pluginsLoaded.core.primitives.asyncDontWait(primitives.runClickEffect()),

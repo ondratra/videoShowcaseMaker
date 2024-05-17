@@ -1,4 +1,4 @@
-import { IPluginAppliance } from '../../tools/plugin'
+import { IPluginApplianceEnriched } from '../../tools/plugin'
 import { ChatboxLogic, ChatCounterpartyGender, ChatParty, ChatPartyTypes } from './ChatboxLogic'
 import { primitives as rawPrimitives } from './primitives'
 import { IChatboxElements } from './setup'
@@ -12,7 +12,7 @@ export interface IChatboxPluginDefaults {}
 
 export const composites =
     (elements: IChatboxElements, _primitives: ReturnType<typeof rawPrimitives>) =>
-    (_pluginsLoaded: Record<string, IPluginAppliance<unknown>>, _defaults: IChatboxPluginDefaults) => {
+    (_pluginsLoaded: Record<string, IPluginApplianceEnriched<unknown>>, _defaults: IChatboxPluginDefaults) => {
         const party = {
             gender: ChatCounterpartyGender.male,
             name: 'Mr. Bob',

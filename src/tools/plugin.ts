@@ -35,7 +35,7 @@ export type IPluginPrimitives = Record<string, (...args: any[]) => () => Promise
  * Composite actions exposed by the plugin.
  */
 export type IPluginComposite<Defaults> = (
-    pluginsLoaded: Record<string, IPluginAppliance<any>>,
+    pluginsLoaded: Record<string, IPluginApplianceEnriched<any>>,
     defaults: Defaults,
 ) => any // TODO: improve
 
@@ -61,6 +61,19 @@ export interface IPluginAppliance<Defaults, EnhancementsDefaults extends Default
     enhancements: IPluginEnhancement<EnhancementsDefaults>
     utilities: Record<string, unknown> // TODO: try to transform this into useful interface
     destroy: IAsyncAction
+}
+
+/**
+ * Appliance set up by the plugin with extra info about available actions.
+ */
+export interface IPluginApplianceEnriched<Defaults, EnhancementsDefaults extends Defaults = Defaults>
+    extends IPluginAppliance<Defaults, EnhancementsDefaults> {
+    pluginActions: {
+        primitives: IPluginPrimitives
+        composites: ReturnType<IPluginComposite<Defaults>>
+        enhancements: ReturnType<IPluginComposite<Defaults>>
+        actions: IPluginPrimitives & ReturnType<IPluginComposite<Defaults>>
+    }
 }
 
 /**

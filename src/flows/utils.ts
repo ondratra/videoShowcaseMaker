@@ -108,15 +108,29 @@ function getAppliancesCompositesIncludingEnhancements<T extends ReadonlyPluginsB
 
             const [composites, appliancesLoaded] = acc
 
-            const newComposite = item.composites(appliancesLoaded, defaults)
+            const newComposites = item.composites(appliancesLoaded, defaults)
             const newEnhancements = item.enhancements
                 .filter((item) => canEnhancementBeActivated(appliancesLoaded, item.requiredPlugins))
                 .map((item) => item.composites(appliancesLoaded, defaults))
                 .reduce((acc, item) => ({ ...acc, ...item }), {})
 
+            const applianceExtended = {
+                ...item,
+                pluginActions: {
+                    primitives: item.primitives,
+                    composites: newComposites,
+                    enhancements: newEnhancements,
+                    actions: {
+                        ...item.primitives,
+                        ...newComposites,
+                        ...newEnhancements,
+                    },
+                },
+            }
+
             return [
-                { ...composites, ...newComposite, ...newEnhancements },
-                { ...appliancesLoaded, [applianceName]: item },
+                { ...composites, ...newComposites, ...newEnhancements },
+                { ...appliancesLoaded, [applianceName]: applianceExtended },
             ]
         },
         [{}, {}] as [CompositesWithEnhancementsTypeTmp, any],

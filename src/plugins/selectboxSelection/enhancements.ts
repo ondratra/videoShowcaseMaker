@@ -1,4 +1,4 @@
-import { IPluginAppliance } from '../../tools/plugin'
+import { IPluginApplianceEnriched } from '../../tools/plugin'
 import { IElementSelector } from '../../tools/utils'
 import { asyncSequence } from '../core/primitives'
 import { ICursorPluginDefaults } from '../cursor/composites' // TODO: expose this interface from cursor's index.ts (see TODOs below)
@@ -19,7 +19,7 @@ export const enhancements =
             {
                 requiredPlugins: ['cursor'],
                 composites: (
-                    pluginsLoaded: Record<string, IPluginAppliance<unknown>>,
+                    pluginsLoaded: Record<string, IPluginApplianceEnriched<unknown>>,
                     defaults: ISelectboxSelectionPluginEnhancementsDefaults,
                 ) => selectboxSelectionWithCursorComposites(pluginsLoaded, primitives, defaults),
             },
@@ -28,23 +28,23 @@ export const enhancements =
 
 function selectboxSelectionWithCursorComposites(
     // TODO: try to better define pluginsLoaded's type (in all plugins)
-    pluginsLoaded: Record<string, IPluginAppliance<unknown>>,
+    pluginsLoaded: Record<string, IPluginApplianceEnriched<unknown>>,
     primitives: ReturnType<typeof rawPrimitives>,
-    defaults: ISelectboxSelectionPluginEnhancementsDefaults,
+    _defaults: ISelectboxSelectionPluginEnhancementsDefaults,
 ) {
-    const cursorComposites = pluginsLoaded.cursor.composites(pluginsLoaded, defaults)
+    const cursorActions = pluginsLoaded.cursor.pluginActions.actions
 
-    // TODO: add sound if audio plugin is loaded as well
     return {
         cursorMoveSelectboxSelection: (selector: IElementSelector, selectionIndex: number) =>
             asyncSequence([
-                cursorComposites.moveCursorToElement(selector),
+                cursorActions.moveCursorToElement(selector),
                 pluginsLoaded.core.primitives.delay(),
+                cursorActions.clickEffectOnly(),
                 primitives.showSelectboxSelection(selector),
                 pluginsLoaded.core.primitives.delay(),
-                cursorComposites.moveCursorToElement(selectboxSelection.option(selectionIndex)),
+                cursorActions.moveCursorToElement(selectboxSelection.option(selectionIndex)),
                 pluginsLoaded.core.primitives.delay(),
-                cursorComposites.clickEffectOnly(),
+                cursorActions.clickEffectOnly(),
                 primitives.hideSelectboxSelection(selectionIndex),
                 pluginsLoaded.core.primitives.delay(),
             ]),

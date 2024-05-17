@@ -17,6 +17,7 @@ export const selectboxTargetOptions = [1, 2]
 export function getPlugins() {
     const plugins = [
         corePlugins.core.setupPlugin(),
+        corePlugins.audio.setupPlugin(), // NOTE: comment this out and everything should work fine only muted
         corePlugins.cursor.setupPlugin(corePlugins.cursor.recommendedConfiguration),
         corePlugins.selectboxSelection.setupPlugin(),
     ] as const satisfies ReadonlyPluginsBase

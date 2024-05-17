@@ -1,4 +1,4 @@
-import { IPluginAppliance } from '../../tools/plugin'
+import { IPluginApplianceEnriched } from '../../tools/plugin'
 import { mbDefault } from '../../tools/utils'
 import { delay } from './primitives'
 
@@ -13,7 +13,7 @@ export interface ICorePluginDefaults {
  * Core plugin's composites.
  */
 export const composites = (
-    pluginsLoaded: Record<string, IPluginAppliance<unknown>>,
+    pluginsLoaded: Record<string, IPluginApplianceEnriched<unknown>>,
     defaults: ICorePluginDefaults,
 ) => ({
     /**

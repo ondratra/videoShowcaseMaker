@@ -1,4 +1,4 @@
-import { IPluginAppliance } from '../../tools/plugin'
+import { IPluginApplianceEnriched } from '../../tools/plugin'
 import { BlockingSound } from './BlockingSound'
 
 /**
@@ -11,7 +11,7 @@ export interface IAudioPluginDefaults {}
  */
 export const composites =
     (blockingSound: BlockingSound) =>
-    (_pluginsLoaded: Record<string, IPluginAppliance<unknown>>, _defaults: IAudioPluginDefaults) => ({
+    (_pluginsLoaded: Record<string, IPluginApplianceEnriched<unknown>>, _defaults: IAudioPluginDefaults) => ({
         /**
          * Plays a given audio and waits for the playback to finish.
          */

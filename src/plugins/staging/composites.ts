@@ -1,4 +1,4 @@
-import { IPluginAppliance } from '../../tools/plugin'
+import { IPluginApplianceEnriched } from '../../tools/plugin'
 import { IStagingElements } from './setup'
 
 /**
@@ -13,7 +13,7 @@ export interface IStagingPluginDefaults {
  */
 export const composites =
     (elements: IStagingElements, _primitives: Record<string, never>) =>
-    (pluginsLoaded: Record<string, IPluginAppliance<unknown>>, defaults: IStagingPluginDefaults) => {
+    (pluginsLoaded: Record<string, IPluginApplianceEnriched<unknown>>, defaults: IStagingPluginDefaults) => {
         // clapboard operations
         const showClapboard = async (): Promise<void> => {
             elements.clapboardOverlay.style.visibility = 'visible'
