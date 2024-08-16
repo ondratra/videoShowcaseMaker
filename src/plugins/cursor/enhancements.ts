@@ -59,12 +59,15 @@ function cursorWithAudioComposites(
          * Triggers target element's mousedown event and shows audio & visual effect at current cursor's position.
          * Cursor doesn't have to be on top of the element.
          */
-        mouseDown: (emitMoveEventsOnElementSelector: IEventEmitterElementSelector) =>
+        mouseDown: (
+            emitMouseDownEventOnElementSelector: IEventEmitterElementSelector,
+            emitMoveEventsOnElementSelector?: IEventEmitterElementSelector,
+        ) =>
             pluginsLoaded.core.primitives.asyncSequence([
                 clickEffectOnly(defaults.soundUrls.mouseDown),
-                primitives.mouseDown(emitMoveEventsOnElementSelector),
+                primitives.mouseDown(emitMoveEventsOnElementSelector || emitMouseDownEventOnElementSelector),
                 pluginsLoaded.core.primitives.triggerElementMouseDown(
-                    emitMoveEventsOnElementSelector,
+                    emitMouseDownEventOnElementSelector,
                     elements.cursorContainer,
                 ),
             ]),

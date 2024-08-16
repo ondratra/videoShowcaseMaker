@@ -72,12 +72,15 @@ export const composites =
              * Triggers target element's mousedown event and shows visual effect at current cursor's position.
              * Cursor doesn't have to be on top of the element.
              */
-            mouseDown: (emitMoveEventsOnElementSelector: IEventEmitterElementSelector) =>
+            mouseDown: (
+                emitMouseDownEventOnElementSelector: IEventEmitterElementSelector,
+                emitMoveEventsOnElementSelector?: IEventEmitterElementSelector,
+            ) =>
                 pluginsLoaded.core.primitives.asyncSequence([
                     clickEffectOnly,
-                    primitives.mouseDown(emitMoveEventsOnElementSelector),
+                    primitives.mouseDown(emitMouseDownEventOnElementSelector),
                     pluginsLoaded.core.primitives.triggerElementMouseDown(
-                        emitMoveEventsOnElementSelector,
+                        emitMoveEventsOnElementSelector || emitMouseDownEventOnElementSelector,
                         elements.cursorContainer,
                     ),
                 ]),
